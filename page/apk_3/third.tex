@@ -86,7 +86,7 @@ The contacted domains include \texttt{jeonjuits.go.kr}, which is a legitimate Ko
 \end{figure}
 The manifest declares 15 permissions, of which four are classified as dangerous: \texttt{ACCESS\_FINE\_LOCATION}, \texttt{ACCESS\_COARSE\_LOCATION}, \texttt{WRITE\_EXTERNAL\_STORAGE}, and \texttt{READ\_EXTERNAL\_STORAGE}. Nine permissions are identified as commonly abused by malware, including \texttt{INTERNET}, \texttt{WAKE\_LOCK}, and location-related permissions.\\
 The app also declares 26 Activity components, 10 Services, 7 Receivers, and 1 Provider, of which 3 Activities, 3 Services, and 4 Receivers are exported and potentially accessible to other applications.
-The presence of \texttt{REQUEST\_INSTALL\_PACKAGES}, GCM/Firebase messaging support, and multiple advertising activities is consistent with the patterns observed in the previous chapters.
+The presence of GCM/Firebase messaging support and multiple advertising activities is consistent with the patterns observed in the previous chapters.
 
 \subsection{AppInfoActivity.java}
 The \texttt{AppInfoActivity} displays a public bus-related URL and mainly serves to legitimise the app from a user-facing perspective.
@@ -102,8 +102,6 @@ Multiple ad SDKs & Monetization through aggressive advertising and possible ad f
 \hline
 Native libraries (JNI) & \texttt{libAudio3.0.so} present for multiple architectures; lacks stack canary and fortify function protections. \\
 \hline
-\texttt{REQUEST\_INSTALL\_PACKAGES} & Suggests dropper-like behaviour and possible APK installation without market interaction. \\
-\hline
 Unencrypted HTTP endpoints & Data to \texttt{jeonjuits.go.kr} can be intercepted or modified through MITM attacks. \\
 \hline
 Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can change behaviour based on remote values without a new release. \\
@@ -111,6 +109,8 @@ Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can c
 Fragment and tab visibility manipulation & Suggests conditional or delayed functionality and may hide behaviour from users and analysts. \\
 \hline
 Hardcoded secrets & API keys and encrypted strings embedded in source (\texttt{adpostkey}, \texttt{adlibkey}, hash keys). \\
+\hline
+Microphone and phone call access & The app can record audio and initiate calls, which is inconsistent with a bus-information service. \\
 \hline
 \end{longtable}
 
@@ -123,26 +123,26 @@ Hardcoded secrets & API keys and encrypted strings embedded in source (\texttt{a
     \label{fig:mobsf_scorecard_three}
 \end{figure}
 
-MobSF assigned a security score of \textbf{38/100} (grade C, HIGH RISK) to this APK, confirming that the application exposes a broad attack surface. The scorecard highlights problems related to signature schemes, outdated Android compatibility, exported components, insecure storage, hardcoded secrets, and the presence of 8 privacy trackers out of 432 checked.
+MobSF assigned a security score of \textbf{38/100} (grade C, HIGH RISK) to this APK, confirming that the application exposes a broad attack surface. The scorecard shows a high concentration of High and Medium severity issues, alongside informational and secure findings. Problems span six categories: certificate, manifest, code, trackers, secrets, and permissions, with 8 privacy trackers detected out of 432 checked and 4 permission hotspots flagged as critical.
 
 \subsection{Certificate Analysis}
-During the MobSF analysis, one unique certificate was found. The binary is signed with the \texttt{v1} signature scheme only, while \texttt{v2}, \texttt{v3}, and \texttt{v4} are absent. The certificate uses \texttt{SHA1withRSA}, which is considered weak due to known hash-collision vulnerabilities. This signing configuration relies on legacy mechanisms associated with known cryptographic and platform-level weaknesses.
+During the MobSF analysis, one unique certificate was found. The binary is signed with the \texttt{v1} signature scheme only, while \texttt{v2}, \texttt{v3}, and \texttt{v4} are absent. The certificate uses \texttt{SHA1withRSA}, which is considered weak due to known hash-collision vulnerabilities, making it vulnerable to the Janus attack on Android 5.0--8.0. This signing configuration relies on legacy mechanisms associated with known cryptographic and platform-level weaknesses.
 
 \subsection{High Severity Findings}
-MobSF reports multiple high-severity issues. The first is the vulnerability to the Janus attack, because the application is signed only with the v1 scheme, making it exploitable on Android 5.0--8.0. The second concerns SHA-1, which is vulnerable to hash-collision attacks. The third is the low minimum SDK version (\texttt{minSdk=14}), which allows installation on older Android versions with unresolved vulnerabilities.\\
-The code analysis additionally identifies three high-severity issues: logging of sensitive information, world-readable files or SharedPreferences, and an active debug configuration. MobSF also detects the StrandHogg~2.0 weakness in the Google app-invite preview activity.\\
-Finally, the shared library analysis reveals that \texttt{libAudio3.0.so} (compiled for multiple architectures) lacks both stack canary protection and fortify function hardening, making it susceptible to memory corruption attacks.
+MobSF reports multiple high-severity issues across certificate, manifest, and code categories. From the certificate, the application is vulnerable to the Janus attack due to v1-only signing, and SHA-1 is used as the hash algorithm. From the manifest, the low minimum SDK version (\texttt{minSdk=14}) allows installation on older unpatched Android versions, and the StrandHogg~2.0 weakness is present in the Google app-invite preview activity.\\
+From the code analysis, three further high-severity findings emerge: logging of sensitive information, world-readable files or SharedPreferences, and an active debug configuration. Additionally, the code uses an insecure random number generator and weak cryptographic primitives (MD5), both of which reduce the reliability of any security-sensitive operations performed by the application.\\
+Finally, the shared library analysis reveals that \texttt{libAudio3.0.so}, compiled for multiple architectures, lacks both stack canary protection and fortify function hardening, making it susceptible to memory corruption attacks.
 
 \subsection{Medium Severity Findings}
-The medium-severity findings are mainly related to insecure configuration and component exposure. The flag \texttt{android:allowBackup=true} makes application data accessible through ADB backups when USB debugging is enabled.\\
-Three Activity, three Service, and four Receiver components are exported without adequate protection, including components related to Firebase, GCM, and advertising frameworks. MobSF also warns about hardcoded secrets and API keys (\texttt{adpostkey}, \texttt{adlibkey}) found across multiple source files.\\
-The application can read and write external storage, exposes insecure WebView usage, and uses MD5, which is considered weak due to collision-resistance problems.
+The medium-severity findings are mainly related to insecure configuration, component exposure, and storage. The flag \texttt{android:allowBackup=true} makes application data accessible through ADB backups when USB debugging is enabled.\\
+Three Activity, three Service, and four Receiver components are exported without adequate protection, including components related to Firebase, GCM, and advertising frameworks. MobSF also warns about hardcoded secrets and API keys (\texttt{adpostkey}, \texttt{adlibkey}) found across multiple source files, and flags insecure WebView usage.\\
+On the storage side, files and SharedPreferences are world-readable, and the application can read and write external storage, potentially exposing user data to other applications. The use of MD5 for hashing is also flagged as a medium-severity issue due to its known collision-resistance weaknesses.
 
 \subsection{Low Severity Findings}
-MobSF reports informational issues related to application logging, including potentially sensitive data. It also reports the use of SSL communication and the presence of root detection capabilities as secure findings.
+MobSF reports informational issues related to application logging, which may include sensitive data. It also reports the use of SSL communication and the presence of root detection capabilities as secure findings. The scorecard additionally flags four permission hotspots as critical, reinforcing the idea that the application is highly sensitive from a privacy perspective.
 
 \subsection{Overall Assessment}
-Overall, MobSF confirms that the APK is not a simple transportation application. The combination of a score of 38/100, weak signing, exported components, insecure native libraries, hardcoded secrets, and an extensive ad/tracking infrastructure suggests an application with high security risk and behaviour consistent with a trojanized or heavily repurposed app.
+Overall, MobSF confirms that the APK is not a simple transportation application. The combination of a score of 38/100, weak signing, exported components, insecure native libraries without memory protections, hardcoded secrets, world-readable storage, and an extensive ad/tracking infrastructure indicates an application with high security risk. The ability to record audio and query installed packages further widens the attack surface beyond what is expected from a bus-information service.
 
 \section{Genymotion}
 
@@ -155,6 +155,6 @@ The emulator analysis therefore strengthens the overall assessment of the sample
 \section{Conclusion}
 
 The combined results of VirusTotal, static analysis, MobSF, and Genymotion consistently indicate that the analysed APK is suspicious and potentially malicious. Across the different tools, the same core patterns emerge: unencrypted network traffic, aggressive use of advertising libraries, remote configuration, exported components, and several weaknesses related to storage and cryptography.\\
-The static inspection shows that the application is not limited to a simple bus-information interface. Instead, it includes native code, runtime permissions for package installation, hidden or manipulated UI behaviour, and remote update logic, all of which are typical indicators of repackaged or dropper-like software.\\
-MobSF strengthens this conclusion by assigning a score of 38/100 and reporting high-severity issues including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, world-readable files, debug configuration, hardcoded secrets, and unprotected native libraries. In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks.\\
+The static inspection shows that the application is not limited to a simple bus-information interface. Instead, it includes native code, audio recording capabilities, runtime permissions for package installation, hidden or manipulated UI behaviour, and remote update logic, all of which are typical indicators of repackaged or dropper-like software.\\
+MobSF strengthens this conclusion by assigning a score of 38/100 and reporting high-severity issues including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, world-readable files, debug configuration, insecure random number generation, hardcoded secrets, and unprotected native libraries. In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks.\\
 Overall, the APK should be treated as unsafe. Even if part of its visible functionality appears legitimate, the combination of insecure communication, suspicious permissions, and evasive implementation choices shows a clear mismatch between the declared purpose of the app and its actual security posture.
