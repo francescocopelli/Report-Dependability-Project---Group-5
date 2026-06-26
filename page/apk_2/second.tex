@@ -6,7 +6,7 @@ The \textit{\twor} sample is a malicious Android application masquerading as a p
 \section{VirusTotal}
 \begin{figure}[htbp]
         \centering
-        \includegraphics[width=\textwidth]{img/virustotal_2_summary.png}
+        \includegraphics[width=\textwidth]{img/apk_2/virustotal_2_summary.png}
         \caption{VirusTotal Summary for\twor}
         \label{fig:virustotal_2_summary}
 \end{figure}
@@ -19,13 +19,13 @@ It is also noteworthy that some well-known vendors, including Microsoft Defender
 \begin{figure}[h]
         \centering
             \begin{subfigure}[t]{0.48\linewidth}
-        \includegraphics[width=0.8\linewidth]{img/virustotal_2_detection_complete.png}
+        \includegraphics[width=0.8\linewidth]{img/apk_2/virustotal_2_detection_complete.png}
         \caption{VirusTotal Detection for \twor}
         \label{fig:virustotal_2_detections}
         \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\linewidth}
-            \includegraphics[width=0.8\linewidth]{img/virustotal_second_permissions.png}
+            \includegraphics[width=0.8\linewidth]{img/apk_2/virustotal_second_permissions.png}
         \end{subfigure}
 \end{figure}
 
@@ -37,7 +37,7 @@ From a security standpoint, this set is significant because it grants the applic
 
 \begin{figure}[h]
         \centering
-        \includegraphics[width=\textwidth]{img/second_relations.png}
+        \includegraphics[width=\textwidth]{img/apk_2/second_relations.png}
         \caption{VirusTotal Relations for \twor}
         \label{fig:virustotal_2_relations}
 \end{figure}
@@ -89,7 +89,7 @@ This creates a clear man-in-the-middle risk and weakens the integrity of the inf
 
 \begin{figure}[h]
         \centering
-        \includegraphics[width=\textwidth]{img/manifest_second.png}
+        \includegraphics[width=\textwidth]{img/apk_2/manifest_second.png}
         \caption{AndroidManifest of \twor}
         \label{fig:manifest_second}
 \end{figure}
@@ -125,7 +125,7 @@ Fragment and tab visibility manipulation & Suggests conditional or delayed funct
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\linewidth]{img/mobsf_two_scorecard.png}
+    \includegraphics[width=\linewidth]{img/apk_2/mobsf_two_scorecard.png}
     \caption{MobSF Scorecard \twor}
     \label{fig:mobsf_scorecard_two}
 \end{figure}
@@ -163,3 +163,48 @@ The combined results of VirusTotal, static analysis, MobSF, and Genymotion consi
 The static inspection shows that the application is not limited to a simple bus-information interface. Instead, it includes native code, runtime permissions for package installation, hidden or manipulated UI behaviour, and remote update logic, all of which are typical indicators of repackaged or dropper-like software.
 MobSF strengthens this conclusion by reporting a large number of high- and medium-severity issues, including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, hardcoded secrets, world-readable files, insecure WebView usage, and multiple privacy trackers.
 In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks, supporting the idea that some behaviour is driven at runtime rather than being fully visible from static inspection. Overall, the APK should be treated as unsafe. Even if part of its visible functionality appears legitimate, the combination of insecure communication, suspicious permissions, and evasive implementation choices shows a clear mismatch between the declared purpose of the app and its actual security posture.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.34.308.png}
+        \caption{... descrivi cosa mostra ... \twor}
+        \label{fig:genymotion2-1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.37.387.png}
+        \caption{... descrivi cosa mostra ... \twor}
+        \label{fig:genymotion2-2}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.42.087.png}
+        \caption{... descrivi cosa mostra ... \twor}
+        \label{fig:genymotion2-3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.51.411.png}
+        \caption{... descrivi cosa mostra ... \twor}
+        \label{fig:genymotion2-4}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.28.03.365.png}
+        \caption{... descrivi cosa mostra ... \twor}
+        \label{fig:genymotion2-5}
+    \end{subfigure}
+
+    \caption{Genymotion dynamic analysis screenshots of \twor}
+    \label{fig:genymotion2-grid}
+\end{figure}
