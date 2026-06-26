@@ -103,10 +103,23 @@ It contains no real interaction logic, which makes it essentially cosmetic. Its 
 
 \section{Summary}
 
-\subsection{Conclusion}
-Several suspicious patterns emerge from the static and dynamic analysis of the sample. Multiple ad SDKs indicate monetization through aggressive advertising or ad fraud, native libraries hide code from Java-level analysis, and \texttt{REQUEST\_INSTALL\_PACKAGES} suggests dropper-like behaviour.
-Moreover, the use of unencrypted HTTP endpoints exposes data to interception, remote configuration allows the application to change behaviour without an update, and fragment or tab visibility manipulation may hide functionality from both users and analysts.
-Taken together, these indicators suggest that the application is built on a legitimate transport-use-case shell, but may in fact operate as a secondary payload installer or a heavily repurposed malicious application.
+\begin{longtable}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{Suspicious Pattern} & \textbf{Explanation} \\
+\hline
+Multiple ad SDKs & Monetization through aggressive advertising and possible ad fraud. \\
+\hline
+Native libraries (JNI) & Executes code not visible to standard Java analysis tools. \\
+\hline
+\texttt{REQUEST\_INSTALL\_PACKAGES} & Suggests dropper-like behaviour and possible APK installation without market interaction. \\
+\hline
+Unencrypted HTTP endpoints & Data can be intercepted or modified through MITM attacks. \\
+\hline
+Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can change behaviour based on remote values. \\
+\hline
+Fragment and tab visibility manipulation & Suggests conditional or delayed functionality and may hide behaviour from users and analysts. \\
+\hline
+\end{longtable}
 
 \section{MobSF}
 
