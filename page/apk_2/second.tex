@@ -157,26 +157,20 @@ The dynamic analysis performed in Genymotion provided practical confirmation of 
 This behaviour is relevant because it indicates that the app is not limited to a simple transportation interface. Instead, it combines user-facing functionality with background services, ad-related activity, and network-driven logic, which is consistent with a repackaged or trojanized application structure.
 The emulator analysis therefore strengthens the overall assessment of the sample as suspicious. In combination with insecure HTTP traffic, exported components, hardcoded secrets, and multiple privacy trackers identified by other tools, the Genymotion observations support the conclusion that the APK presents a non-negligible security risk.
 
-\section{Conclusion}
-
-The combined results of VirusTotal, static analysis, MobSF, and Genymotion consistently indicate that the analyzed APK is suspicious and potentially malicious. Across the different tools, the same core patterns emerge: unencrypted network traffic, aggressive use of advertising libraries, remote configuration, exported components, and several weaknesses related to storage and cryptography.
-The static inspection shows that the application is not limited to a simple bus-information interface. Instead, it includes native code, runtime permissions for package installation, hidden or manipulated UI behaviour, and remote update logic, all of which are typical indicators of repackaged or dropper-like software.
-MobSF strengthens this conclusion by reporting a large number of high- and medium-severity issues, including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, hardcoded secrets, world-readable files, insecure WebView usage, and multiple privacy trackers.
-In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks, supporting the idea that some behaviour is driven at runtime rather than being fully visible from static inspection. Overall, the APK should be treated as unsafe. Even if part of its visible functionality appears legitimate, the combination of insecure communication, suspicious permissions, and evasive implementation choices shows a clear mismatch between the declared purpose of the app and its actual security posture.
 
 \begin{figure}[htbp]
     \centering
     \begin{subfigure}[t]{0.48\linewidth}
         \centering
         \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.34.308.png}
-        \caption{... descrivi cosa mostra ... \twor}
+        \caption{Bus stop search screen showing no results during dynamic analysis \twor}
         \label{fig:genymotion2-1}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \centering
         \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.37.387.png}
-        \caption{... descrivi cosa mostra ... \twor}
+        \caption{Route search screen with departure and arrival fields showing no results \twor}
         \label{fig:genymotion2-2}
     \end{subfigure}
 
@@ -185,14 +179,14 @@ In parallel, the dynamic analysis in Genymotion confirms that the app interacts 
     \begin{subfigure}[t]{0.48\linewidth}
         \centering
         \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.42.087.png}
-        \caption{... descrivi cosa mostra ... \twor}
+        \caption{App settings menu showing notification and display preferences \twor}
         \label{fig:genymotion2-3}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\linewidth}
         \centering
         \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.51.411.png}
-        \caption{... descrivi cosa mostra ... \twor}
+        \caption{App info screen showing outdated database state for \twor}
         \label{fig:genymotion2-4}
     \end{subfigure}
 
@@ -201,10 +195,17 @@ In parallel, the dynamic analysis in Genymotion confirms that the app interacts 
     \begin{subfigure}[t]{0.48\linewidth}
         \centering
         \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.28.03.365.png}
-        \caption{... descrivi cosa mostra ... \twor}
+        \caption{Error pop-up indicating database download failure and prompting app restart \twor}
         \label{fig:genymotion2-5}
     \end{subfigure}
 
     \caption{Genymotion dynamic analysis screenshots of \twor}
     \label{fig:genymotion2-grid}
 \end{figure}
+
+\section{Conclusion}
+
+The combined results of VirusTotal, static analysis, MobSF, and Genymotion consistently indicate that the analyzed APK is suspicious and potentially malicious. Across the different tools, the same core patterns emerge: unencrypted network traffic, aggressive use of advertising libraries, remote configuration, exported components, and several weaknesses related to storage and cryptography.
+The static inspection shows that the application is not limited to a simple bus-information interface. Instead, it includes native code, runtime permissions for package installation, hidden or manipulated UI behaviour, and remote update logic, all of which are typical indicators of repackaged or dropper-like software.
+MobSF strengthens this conclusion by reporting a large number of high- and medium-severity issues, including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, hardcoded secrets, world-readable files, insecure WebView usage, and multiple privacy trackers.
+In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks, supporting the idea that some behaviour is driven at runtime rather than being fully visible from static inspection. Overall, the APK should be treated as unsafe. Even if part of its visible functionality appears legitimate, the combination of insecure communication, suspicious permissions, and evasive implementation choices shows a clear mismatch between the declared purpose of the app and its actual security posture.
