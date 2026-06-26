@@ -1,0 +1,34 @@
+\chapter{Introduction}\label{sec:introduction}
+ The aim of this project is to study the behavior of three different version of the same application for Android devices through antimalware, static and dynamic analysis.
+ The main goal was to identify the malicious payload inside the APK files of the provided samples.
+
+ The project is composed by three diffent file:
+ \begin{enumerate}
+     \item {\one}, (from now on will be "\oner") see Chapter \ref{one}
+     \item \two, (from now on will be "\twor") see Chapter \ref{two}
+     \item \three, (from now on will be "\threer") see Chapter \ref{three}
+ \end{enumerate}
+ 
+\section{Tools}
+  During the project, three main analysis tools have been used to identity the malicious behavior of the samples:
+ \begin{itemize}
+     \item VirusTotal \link{virustotal.com} (anti-malware analysis)
+     \begin{itemize}
+         \item It’s a web tool that allows to submit samples and analyze them with several antivirus or anti-malware programs
+         \item This tool was used to gain a starting insight on the already existing knowledge about the specific malicious sample.
+     \end{itemize}
+     \item MobSF \link{github.com/MobSF/Mobile-Security-Framework-MobSF} (static and dynamic analysis)
+ \begin{itemize}
+     \item It automatically highlight interesting features of the application (e.g. Android permissions, API calls, remote URLs). It also extract the Java code from the APK file. In this way we can gain a strong insight of the potential malicious behavior of the application and then manually analyze it by examining the code.
+ \item Moreover, it perform a dynamic analysis, by executing the application inside a virtual environment and by monitoring it.
+ \end{itemize}
+ \item Java Decompiler \link{java-decompiler.github.io}
+\begin{itemize}
+    \item This tool allows users to displays Java source codes of ".class" files graphically. It can browse the reconstructed source code with the Java Decompiler Graphical User Interface (GUI) for instant access to methods and fields.
+\end{itemize}
+ \item Genymotion \link{genymotion.com} (dynamic analysis)
+ \begin{itemize}
+ 
+ \item Creates a virtual environments for MobSF in order to execute the malware sample safely.
+ \end{itemize}
+ \end{itemize}

@@ -1,0 +1,125 @@
+\chapter{\twor}
+
+\section{What is it?}
+The \textit{\twor} sample is a malicious Android application masquerading as a plug-in for a transportation app series developed by a South Korean developer. The legitimate series provides bus-related information, such as bus stop locations and arrival times, which makes the repackaged sample appear trustworthy at first glance.
+
+\section{VirusTotal}
+\begin{figure}[htbp]
+        \centering
+        \includegraphics[width=\textwidth]{img/virustotal_2_summary.png}
+        \caption{VirusTotal Summary for\twor}
+        \label{fig:virustotal_2_summary}
+\end{figure}
+
+\subsection{Detection}
+The antimalware analysis performed with VirusTotal shows that \texttt{40/76} security vendors flagged the file as malicious, while \texttt{29/76} vendors classified it as a secure file and \texttt{7/76} vendors reported an \textit{Unable to process file type} error.
+Most engines identify the sample as a generic Android trojan, and some of them further classify it as a downloader-family specimen. A few vendors instead label it only as generic Android malware, without specifying a precise family.
+It is also noteworthy that some well-known vendors, including Microsoft Defender, McAfee, and Malwarebytes, did not identify the file as malicious.
+
+\begin{figure}[h]
+        \centering
+            \begin{subfigure}[t]{0.48\linewidth}
+        \includegraphics[width=0.8\linewidth]{img/virustotal_2_detection_complete.png}
+        \caption{VirusTotal Detection for \twor}
+        \label{fig:virustotal_2_detections}
+        \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+            \includegraphics[width=0.8\linewidth]{img/virustotal_second_permissions.png}
+        \end{subfigure}
+\end{figure}
+
+\subsection{Details}
+The permissions requested by the application include \texttt{ACCESS\_FINE\_LOCATION}, \texttt{ACCESS\_COARSE\_LOCATION}, \texttt{ACCESS\_LOCATION\_EXTRA\_COMMANDS}, \texttt{READ\_EXTERNAL\_STORAGE}, \texttt{WRITE\_EXTERNAL\_STORAGE}, \texttt{INTERNET}, \texttt{ACCESS\_NETWORK\_STATE}, \texttt{ACCESS\_WIFI\_STATE}, \texttt{CHANGE\_WIFI\_STATE}, \texttt{WAKE\_LOCK}, \texttt{VIBRATE}, the custom permission \texttt{lmh.android.gjbus.permission.C2D\_MESSAGE}, and \\\texttt{com.google.android.c2dm.permission.RECEIVE}.
+From a security standpoint, this set is significant because it grants the application access to precise location data, external storage, and network state, while also enabling background execution and push-message handling. Although some of these permissions are compatible with a bus-information service, their combination expands the attack surface and may support tracking, persistence, or remote control.
+
+\subsection{Relations}
+
+\begin{figure}[h]
+        \centering
+        \includegraphics[width=\textwidth]{img/second_relations.png}
+        \caption{VirusTotal Relations for \twor}
+        \label{fig:virustotal_2_relations}
+\end{figure}
+
+VirusTotal, as shown in Fig.\ref{fig:virustotal_2_relations}, reports multiple contacted URLs, domains, and IP addresses associated with the APK. The first three URLs are hosted on AWS Elastic Beanstalk and appear to retrieve the category, environment, and issue from a central database, whereas the last one appears to retrieve an advertising configuration initialization file.
+The domain \texttt{busappmanager.elasticbeanstalk.com} is currently unavailable, while \texttt{gwk.adlibr.com/ad/config/init} is reachable and responds to \texttt{POST} requests, returning a JSON message that indicates a missing \textit{media key} if the request is not properly formed.
+This pattern suggests the presence of a remotely configurable backend and an advertising subsystem, both of which are relevant because they allow the application to change behaviour without requiring a new APK release.
+
+
+\subsection{Behavior}
+The behaviour tab indicates that the APK accesses file-related resources, builds JSON objects from filenames and absolute paths, reads data through buffer streams, and opens files from absolute paths.
+It also shows the use of reflection or control-based execution to start another application from the current one, which may indicate indirect execution of external components. In addition, the sample interacts with advertising and analytics libraries, schedules recording tasks, and reads files from the assets directory.
+Overall, the observed behaviour is more complex than that of a simple bus-information client and is compatible with a repackaged application that supports file-system interaction and dynamically driven actions.
+
+\section{Static Analysis}
+
+Static analysis shows that the application combines legitimate bus-related functionality with advertising SDKs, remote configuration mechanisms, native code, and update-like behaviour. This indicates that the APK is not limited to its declared purpose, but may also support conditional execution and payload delivery at runtime.
+
+\subsection{MainActivity.java}
+\texttt{MainActivity} inherits from \texttt{BaseMainActivity}.\\It calls \texttt{getTabView(BaseTabFragmentActivity.MainTabs.BUSTRANS).setVisibility(8)} to hide a UI tab, provides ad-network keys through \texttt{getAdvertiseKey(...)}, and retrieves configuration through \texttt{getEnvironmentProperties(...)}.
+This combination suggests that the visible interface is at least partially controlled at runtime. In particular, the hiding of a UI tab and the retrieval of external configuration parameters imply that the application may adapt its behaviour according to remotely supplied values.
+The use of multiple advertising providers, including AdMob, Facebook, and AdLib, further confirms the presence of monetization-oriented logic.
+
+\subsection{EnvConstant.java}
+The \texttt{EnvConstant} class defines several hardcoded advertising and analytics keys, including \texttt{ADAMKEY}, \texttt{ADLIBKEY}, \texttt{ADMOBUNITID}, \texttt{FACEBOOK}, and \texttt{GATRACKERID}.
+These constants confirm the integration of multiple ad SDKs and tracking frameworks. Although no endpoint URLs are directly visible in this file, the constants are consistent with the remote-configuration logic observed in the main activity.
+
+\subsection{BusApiWeb.java}
+\texttt{BusApiWeb} performs network requests to \texttt{http://bus.changwon.go.kr/busInfo/busInfoDetail.jsp} and \texttt{http://bus.changwon.go.kr/busInfo/mapLayer.jsp}. It uses Volley for networking, parses HTML responses instead of JSON, and relays information through listeners.
+The main issue in this component is the exclusive use of HTTP. Since the communication is not protected by TLS, bus-stop identifiers and route data travel in plaintext and can be intercepted or modified in transit.
+This creates a clear man-in-the-middle risk and weakens the integrity of the information delivered by the application.
+
+\subsection{AndroidManifest.xml}
+
+\begin{figure}[h]
+        \centering
+        \includegraphics[width=\textwidth]{img/manifest_second.png}
+        \caption{AndroidManifest of \twor}
+        \label{fig:manifest_second}
+\end{figure}
+The manifest declares the permissions \texttt{INTERNET}, \texttt{ACCESS\_FINE\_LOCATION}, \texttt{ACCESS\_COARSE\_LOCATION}, \texttt{READ\_EXTERNAL\_STORAGE}, \texttt{WRITE\_EXTERNAL\_STORAGE}, and \texttt{REQUEST\_INSTALL\_PACKAGES}.
+\\It also declares multiple advertising and analytics activities, including AdLib, AdMob, Facebook, and AdFit (Kakao), together with GCM and Firebase messaging support and the custom service \texttt{lmh.android.cwbus.GCMIntentService}.
+These declarations confirm that the application can receive background messages and interact with external services. In particular, \texttt{REQUEST\_INSTALL\_PACKAGES} is notable because, if granted, it may allow silent installation of additional APKs.
+
+\subsection{AppInfoActivity.java}
+The \texttt{AppInfoActivity} displays the link \texttt{http://bus.changwon.go.kr/main} and mainly serves to legitimise the app from a user-facing perspective.
+It contains no real interaction logic, which makes it essentially cosmetic. Its role appears to be presenting the application as a legitimate transportation service, even though the rest of the static analysis reveals a much more complex and suspicious architecture.
+
+\section{Summary}
+
+\subsection{Conclusion}
+Several suspicious patterns emerge from the static and dynamic analysis of the sample. Multiple ad SDKs indicate monetization through aggressive advertising or ad fraud, native libraries hide code from Java-level analysis, and \texttt{REQUEST\_INSTALL\_PACKAGES} suggests dropper-like behaviour.
+Moreover, the use of unencrypted HTTP endpoints exposes data to interception, remote configuration allows the application to change behaviour without an update, and fragment or tab visibility manipulation may hide functionality from both users and analysts.
+Taken together, these indicators suggest that the application is built on a legitimate transport-use-case shell, but may in fact operate as a secondary payload installer or a heavily repurposed malicious application.
+
+\section{MobSF}
+
+During the MobSF analysis, one unique certificate was found. The binary is signed with the \texttt{v1} signature scheme only, while \texttt{v2}, \texttt{v3}, and \texttt{v4} are absent. The certificate uses \texttt{SHA1withRSA}, with subject and issuer both identified as \texttt{C=ko, L=Jeonju, CN=Myoung-Hun Lee}.
+The validity interval spans from \texttt{2011-05-25 07:49:38+00:00} to \texttt{2061-05-12 07:49:38+00:00}, and the reported hash algorithm is SHA-1. This signing configuration is weak from a security perspective because it relies on legacy mechanisms associated with known cryptographic and platform-level weaknesses.
+
+\subsection{High Severity Findings}
+MobSF reports nine high-severity issues. The first is vulnerability to the Janus attack, because the application is signed only with the v1 scheme. The second concerns SHA-1, which is vulnerable to hash-collision attacks. The third is the low minimum SDK version (\texttt{minSdk=14}), which allows installation on older Android versions with unresolved vulnerabilities.
+MobSF also detects Android Task Hijacking and StrandHogg weaknesses in \texttt{lmh.android.cwbus.activity.AlarmActivity} and \texttt{com.google.android.gms.appinvite.PreviewActivity}. In addition, the analysis flags debug configuration, weak encryption in the AdLib library, a world-readable file or shared preference, and the presence of more than eight privacy trackers.
+
+\subsection{Medium Severity Findings}
+The medium-severity findings are mainly related to insecure configuration and component exposure. The flag \texttt{android:allowBackup=true} makes application data accessible through ADB backups when USB debugging is enabled.
+Several activities and receivers are exported or not properly protected, including \texttt{AlarmActivity}, \texttt{CampaignTrackingReceiver}, \texttt{FirebaseMessagingService}, \texttt{TagManagerPreviewActivity}, and Firebase/GCM-related components. MobSF also warns about the external permission associated with \texttt{INSTALL\_PACKAGES}, which is especially relevant because it may support silent installation behaviour.
+The scan further identifies insecure storage and code-quality issues, including read/write access to external storage, hardcoded secrets in multiple files, insecure WebView usage, temporary file creation, an insecure random number generator, possible SQL injection through raw queries, and the use of MD5, which is considered weak because of collision-resistance problems.
+
+\subsection{Low Severity Findings}
+MobSF reports one informational issue: the application logs information, including potentially sensitive data.
+It also reports two secure findings: the use of SSL communication and the presence of root detection capabilities. Finally, the scorecard flags one hotspot related to a critical permission, reinforcing the idea that the application is highly sensitive from a security perspective.
+
+\section{Genymotion}
+
+The dynamic analysis performed in Genymotion provided practical confirmation of several findings obtained during static inspection. The application interacts with remote endpoints, relies on advertising frameworks, and appears capable of adapting part of its behaviour through external configuration data rather than through local code changes.
+This behaviour is relevant because it indicates that the app is not limited to a simple transportation interface. Instead, it combines user-facing functionality with background services, ad-related activity, and network-driven logic, which is consistent with a repackaged or trojanized application structure.
+The emulator analysis therefore strengthens the overall assessment of the sample as suspicious. In combination with insecure HTTP traffic, exported components, hardcoded secrets, and multiple privacy trackers identified by other tools, the Genymotion observations support the conclusion that the APK presents a non-negligible security risk.
+
+\section{Conclusion}
+
+The combined results of VirusTotal, static analysis, MobSF, and Genymotion consistently indicate that the analyzed APK is suspicious and potentially malicious. Across the different tools, the same core patterns emerge: unencrypted network traffic, aggressive use of advertising libraries, remote configuration, exported components, and several weaknesses related to storage and cryptography.
+The static inspection shows that the application is not limited to a simple bus-information interface. Instead, it includes native code, runtime permissions for package installation, hidden or manipulated UI behaviour, and remote update logic, all of which are typical indicators of repackaged or dropper-like software.
+MobSF strengthens this conclusion by reporting a large number of high- and medium-severity issues, including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, hardcoded secrets, world-readable files, insecure WebView usage, and multiple privacy trackers.
+In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks, supporting the idea that some behaviour is driven at runtime rather than being fully visible from static inspection. Overall, the APK should be treated as unsafe. Even if part of its visible functionality appears legitimate, the combination of insecure communication, suspicious permissions, and evasive implementation choices shows a clear mismatch between the declared purpose of the app and its actual security posture.

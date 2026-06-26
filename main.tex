@@ -1,0 +1,36 @@
+\documentclass[a4paper, twoside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{vmargin}
+\usepackage{fancyhdr}
+\usepackage{wrapfig}
+\usepackage{CJKutf8}
+\usepackage{xcolor}
+\usepackage{longtable}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage[font=small]{caption}
+\usepackage{CJK}
+\usepackage[colorinlistoftodos]{todonotes}
+\graphicspath{ {img/} }
+\usepackage{array}
+\usepackage{url} % For URLs in text and references
+% \usepackage[T1]{fontenc} % Font encoding, T1 = it
+\usepackage[italian, english]{babel} % Lingua principale italiano, con parti in inglese
+% \usepackage[a4paper,top=3cm,bottom=3cm,left=3cm,right=3cm]{geometry} %impaginazione e margini documento
+% \raggedbottom % Se la pagina non è completa, lascia lo spazio alla fine
+\input{settings}
+\begin{document}
+% \pagestyle{headings}
+\include{Frontespizio}
+
+\thispagestyle{empty} % No page number on the title page
+
+\tableofcontents
+\thispagestyle{empty} % No page number on the Table of Contents page
+
+\input{filelist}
+
+\end{document}
