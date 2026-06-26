@@ -57,12 +57,27 @@ Overall, the observed behaviour is more complex than that of a simple bus-inform
 Static analysis shows that the application combines legitimate bus-related functionality with advertising SDKs, remote configuration mechanisms, native code, and update-like behaviour. This indicates that the APK is not limited to its declared purpose, but may also support conditional execution and payload delivery at runtime.
 
 \subsection{MainActivity.java}
-\texttt{MainActivity} inherits from \texttt{BaseMainActivity}.\\It calls \texttt{getTabView(BaseTabFragmentActivity.MainTabs.BUSTRANS).setVisibility(8)} to hide a UI tab, provides ad-network keys through \texttt{getAdvertiseKey(...)}, and retrieves configuration through \texttt{getEnvironmentProperties(...)}.
+\begin{itemize}
+    \item Inherits from \texttt{BaseMainActivity}.
+    \item Calls \texttt{getTabView(BaseTabFragmentActivity.MainTabs.BUSTRANS).setVisibility(8)} to hide a UI tab.
+    \item Provides ad-network keys through \texttt{getAdvertiseKey(...)}.
+    \item Retrieves configuration through \texttt{getEnvironmentProperties(...)}.
+\end{itemize}
+
 This combination suggests that the visible interface is at least partially controlled at runtime. In particular, the hiding of a UI tab and the retrieval of external configuration parameters imply that the application may adapt its behaviour according to remotely supplied values.
 The use of multiple advertising providers, including AdMob, Facebook, and AdLib, further confirms the presence of monetization-oriented logic.
 
 \subsection{EnvConstant.java}
 The \texttt{EnvConstant} class defines several hardcoded advertising and analytics keys, including \texttt{ADAMKEY}, \texttt{ADLIBKEY}, \texttt{ADMOBUNITID}, \texttt{FACEBOOK}, and \texttt{GATRACKERID}.
+
+\begin{lstlisting}[language=Java]
+public static final String ADAM_KEY = "3034Z1OT1385cf1db09";
+public static final String ADLIB_KEY = "590ea88a0cf2843c93807ed9";
+public static final String ADMOB_UNITID = "ca-app-pub-0388605861855854/7499990747";
+public static final String FACEBOOK = "627046304133735685335228304842";
+public static final String GA_TRACKER_ID = "UA-56668425-6";
+\end{lstlisting}
+
 These constants confirm the integration of multiple ad SDKs and tracking frameworks. Although no endpoint URLs are directly visible in this file, the constants are consistent with the remote-configuration logic observed in the main activity.
 
 \subsection{BusApiWeb.java}
@@ -95,8 +110,17 @@ Taken together, these indicators suggest that the application is built on a legi
 
 \section{MobSF}
 
-During the MobSF analysis, one unique certificate was found. The binary is signed with the \texttt{v1} signature scheme only, while \texttt{v2}, \texttt{v3}, and \texttt{v4} are absent. The certificate uses \texttt{SHA1withRSA}, with subject and issuer both identified as \texttt{C=ko, L=Jeonju, CN=Myoung-Hun Lee}.
-The validity interval spans from \texttt{2011-05-25 07:49:38+00:00} to \texttt{2061-05-12 07:49:38+00:00}, and the reported hash algorithm is SHA-1. This signing configuration is weak from a security perspective because it relies on legacy mechanisms associated with known cryptographic and platform-level weaknesses.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{img/mobsf_two_scorecard.png}
+    \caption{MobSF Scorecard \twor}
+    \label{fig:mobsf_scorecard_two}
+\end{figure}
+
+MobSF highlights several security issues in the analyzed APK, confirming that the application exposes a broad attack surface. In particular, the scorecard shows problems related to signature schemes, outdated Android compatibility, exported components, insecure storage, and the presence of multiple privacy trackers.
+
+\subsection{Certificate Analysis}
+During the MobSF analysis, one unique certificate was found. The binary is signed with the \texttt{v1} signature scheme only, while \texttt{v2}, \texttt{v3}, and \texttt{v4} are absent. The certificate uses \texttt{SHA1withRSA}, with subject and issuer both identified as \texttt{C=ko, L=Jeonju, CN=Myoung-Hun Lee}. The validity interval spans from \texttt{2011-05-25 07:49:38+00:00} to \texttt{2061-05-12 07:49:38+00:00}, and the reported hash algorithm is SHA-1. This signing configuration is weak from a security perspective because it relies on legacy mechanisms associated with known cryptographic and platform-level weaknesses.
 
 \subsection{High Severity Findings}
 MobSF reports nine high-severity issues. The first is vulnerability to the Janus attack, because the application is signed only with the v1 scheme. The second concerns SHA-1, which is vulnerable to hash-collision attacks. The third is the low minimum SDK version (\texttt{minSdk=14}), which allows installation on older Android versions with unresolved vulnerabilities.
@@ -110,6 +134,9 @@ The scan further identifies insecure storage and code-quality issues, including 
 \subsection{Low Severity Findings}
 MobSF reports one informational issue: the application logs information, including potentially sensitive data.
 It also reports two secure findings: the use of SSL communication and the presence of root detection capabilities. Finally, the scorecard flags one hotspot related to a critical permission, reinforcing the idea that the application is highly sensitive from a security perspective.
+
+\subsection{Overall Assessment}
+Overall, MobSF confirms that the APK is not a simple transportation application. The combination of weak signing, exported components, insecure storage, dynamic installation capabilities, and ad/tracking infrastructure suggests an application with a high security risk and behaviour consistent with a trojanized or heavily repurposed app.
 
 \section{Genymotion}
 
