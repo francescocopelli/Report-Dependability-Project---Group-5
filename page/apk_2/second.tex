@@ -6,7 +6,7 @@ The \textit{\twor} sample is a malicious Android application masquerading as a p
 \section{VirusTotal}
 \begin{figure}[htbp]
         \centering
-        \includegraphics[width=\textwidth]{img/virustotal_2_summary.png}
+        \includegraphics[width=\textwidth]{virustotal_2_summary.png}
         \caption{VirusTotal Summary for\twor}
         \label{fig:virustotal_2_summary}
 \end{figure}
@@ -19,13 +19,13 @@ It is also noteworthy that some well-known vendors, including Microsoft Defender
 \begin{figure}[h]
         \centering
             \begin{subfigure}[t]{0.48\linewidth}
-        \includegraphics[width=0.8\linewidth]{img/virustotal_2_detection_complete.png}
+        \includegraphics[width=0.8\linewidth]{virustotal_2_detection_complete.png}
         \caption{VirusTotal Detection for \twor}
         \label{fig:virustotal_2_detections}
         \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\linewidth}
-            \includegraphics[width=0.8\linewidth]{img/virustotal_second_permissions.png}
+            \includegraphics[width=0.8\linewidth]{virustotal_second_permissions.png}
         \end{subfigure}
 \end{figure}
 
@@ -37,7 +37,7 @@ From a security standpoint, this set is significant because it grants the applic
 
 \begin{figure}[h]
         \centering
-        \includegraphics[width=\textwidth]{img/second_relations.png}
+        \includegraphics[width=\textwidth]{second_relations.png}
         \caption{VirusTotal Relations for \twor}
         \label{fig:virustotal_2_relations}
 \end{figure}
@@ -89,7 +89,7 @@ This creates a clear man-in-the-middle risk and weakens the integrity of the inf
 
 \begin{figure}[h]
         \centering
-        \includegraphics[width=\textwidth]{img/manifest_second.png}
+        \includegraphics[width=\textwidth]{manifest_second.png}
         \caption{AndroidManifest of \twor}
         \label{fig:manifest_second}
 \end{figure}
@@ -125,7 +125,7 @@ Fragment and tab visibility manipulation & Suggests conditional or delayed funct
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\linewidth]{img/mobsf_two_scorecard.png}
+    \includegraphics[width=\linewidth]{mobsf_two_scorecard.png}
     \caption{MobSF Scorecard \twor}
     \label{fig:mobsf_scorecard_two}
 \end{figure}
@@ -156,6 +156,51 @@ Overall, MobSF confirms that the APK is not a simple transportation application.
 The dynamic analysis performed in Genymotion provided practical confirmation of several findings obtained during static inspection. The application interacts with remote endpoints, relies on advertising frameworks, and appears capable of adapting part of its behaviour through external configuration data rather than through local code changes.
 This behaviour is relevant because it indicates that the app is not limited to a simple transportation interface. Instead, it combines user-facing functionality with background services, ad-related activity, and network-driven logic, which is consistent with a repackaged or trojanized application structure.
 The emulator analysis therefore strengthens the overall assessment of the sample as suspicious. In combination with insecure HTTP traffic, exported components, hardcoded secrets, and multiple privacy trackers identified by other tools, the Genymotion observations support the conclusion that the APK presents a non-negligible security risk.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.34.308.png}
+        \caption{Bus stop search screen showing no results during dynamic analysis \twor}
+        \label{fig:genymotion2-1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.37.387.png}
+        \caption{Route search screen with departure and arrival fields showing no results \twor}
+        \label{fig:genymotion2-2}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.42.087.png}
+        \caption{App settings menu showing notification and display preferences \twor}
+        \label{fig:genymotion2-3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.51.411.png}
+        \caption{App info screen for Gwangju Bus v3.3.7 showing outdated database state \twor}
+        \label{fig:genymotion2-4}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.28.03.365.png}
+        \caption{Error pop-up indicating database download failure and prompting app restart \twor}
+        \label{fig:genymotion2-5}
+    \end{subfigure}
+
+    \caption{Genymotion dynamic analysis screenshots of \twor}
+    \label{fig:genymotion2-grid}
+\end{figure}
 
 \section{Conclusion}
 
