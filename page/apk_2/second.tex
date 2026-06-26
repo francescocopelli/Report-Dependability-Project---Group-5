@@ -157,44 +157,41 @@ The dynamic analysis performed in Genymotion provided practical confirmation of 
 This behaviour is relevant because it indicates that the app is not limited to a simple transportation interface. Instead, it combines user-facing functionality with background services, ad-related activity, and network-driven logic, which is consistent with a repackaged or trojanized application structure.
 The emulator analysis therefore strengthens the overall assessment of the sample as suspicious. In combination with insecure HTTP traffic, exported components, hardcoded secrets, and multiple privacy trackers identified by other tools, the Genymotion observations support the conclusion that the APK presents a non-negligible security risk.
 
-
 \begin{figure}[htbp]
     \centering
-    \begin{subfigure}[t]{0.48\linewidth}
+    \begin{subfigure}[t]{0.30\linewidth}
         \centering
-        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.34.308.png}
+        \includegraphics[width=\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.34.308.png}
         \caption{Bus stop search screen showing no results during dynamic analysis \twor}
         \label{fig:genymotion2-1}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
+    \begin{subfigure}[t]{0.30\linewidth}
         \centering
-        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.37.387.png}
+        \includegraphics[width=\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.37.387.png}
         \caption{Route search screen with departure and arrival fields showing no results \twor}
         \label{fig:genymotion2-2}
     \end{subfigure}
-
-    \vspace{0.5cm}
-
-    \begin{subfigure}[t]{0.48\linewidth}
+    \hfill
+    \begin{subfigure}[t]{0.30\linewidth}
         \centering
-        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.42.087.png}
+        \includegraphics[width=\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.42.087.png}
         \caption{App settings menu showing notification and display preferences \twor}
         \label{fig:genymotion2-3}
     \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-        \centering
-        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.51.411.png}
-        \caption{App info screen showing outdated database state for \twor}
-        \label{fig:genymotion2-4}
-    \end{subfigure}
 
     \vspace{0.5cm}
 
-    \begin{subfigure}[t]{0.48\linewidth}
+    \begin{subfigure}[t]{0.30\linewidth}
         \centering
-        \includegraphics[width=0.68\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.28.03.365.png}
+        \includegraphics[width=\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.51.411.png}
+        \caption{App info screen showing outdated database state for \twor}
+        \label{fig:genymotion2-4}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.30\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.28.03.365.png}
         \caption{Error pop-up indicating database download failure and prompting app restart \twor}
         \label{fig:genymotion2-5}
     \end{subfigure}
