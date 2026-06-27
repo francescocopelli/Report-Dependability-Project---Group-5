@@ -4,20 +4,72 @@ Summarize the main findings of the analysis and the malicious behavior of the an
 
 \newpage % Start References on a new page
 \chapter*{References}
-\addcontentsline{toc}{section}{References} % Add References to Table of Contents
+\addcontentsline{toc}{chapter}{References} % Add References to Table of Contents
 \label{sec:references}
-List all sources cited in the report, including course slides, tool documentation, articles, or online resources used for the analysis. You can use the \texttt{thebibliography} environment or a .bib file with the \texttt{biblatex} package.
 \listoftodos[Todos]
 \listoffigures
 \begin{thebibliography}{99}
-    % Example reference to slides
-    \bibitem{Lab00-Introduction.pdf} Dependability Laboratory Lecture Notes: Introduction. University of Pisa.
-    \bibitem{Lab01-MalwareAnalysis_01.pdf} Dependability Laboratory Lecture Notes: Malware Analysis 1. University of Pisa.
-    \bibitem{Lab02-MalwareAnalysis_02.pdf} Dependability Laboratory Lecture Notes: Malware Analysis 2. University of Pisa.
-    \bibitem{Lab03-MalwareAnalysis_03.pdf} Dependability Laboratory Lecture Notes: Malware Analysis 3. University of Pisa.
-    \bibitem{Lab04-MalwareAnalysis_04.pdf} Dependability Laboratory Lecture Notes: Malware Analysis 4. University of Pisa.
-    % Add other references here (e.g., MobSF documentation, VirusTotal website, articles, etc.)
-    \bibitem{VirusTotal} VirusTotal. \url{https://www.virustotal.com/}
-    \bibitem{MobSF} Mobile Security Framework (MobSF). \url{https://github.com/MobSF/Mobile-Security-Framework-MobSF}
-    % ... other tools or resources used
+
+    % ── Course material ──────────────────────────────────────────────────────
+    \bibitem{Lab00} Dependability Laboratory Lecture Notes: Introduction.
+    University of Pisa, 2024--2025.
+
+    \bibitem{Lab01} Dependability Laboratory Lecture Notes: Malware Analysis 1.
+    University of Pisa, 2024--2025.
+
+    \bibitem{Lab02} Dependability Laboratory Lecture Notes: Malware Analysis 2.
+    University of Pisa, 2024--2025.
+
+    \bibitem{Lab03} Dependability Laboratory Lecture Notes: Malware Analysis 3.
+    University of Pisa, 2024--2025.
+
+    \bibitem{Lab04} Dependability Laboratory Lecture Notes: Malware Analysis 4.
+    University of Pisa, 2024--2025.
+
+    % ── Malware family documentation ─────────────────────────────────────────
+    \bibitem{McAfee-Malbus} C.\ Beek and S.\ Rubin,
+    ``Malbus --- Trojanized Korean Bus App on Google Play,''
+    McAfee Mobile Research, 2019.
+    \url{https://www.mcafee.com/blogs/other-blogs/mcafee-labs/malbus-malware-takes-the-bus-route-to-android-users/}
+
+    % ── Analysis tools ───────────────────────────────────────────────────────
+    \bibitem{VirusTotal} VirusTotal --- Analyze suspicious files, domains, IPs
+    and URLs to detect malware and other breaches.
+    \url{https://www.virustotal.com/}
+
+    \bibitem{MobSF} Mobile Security Framework (MobSF) --- An automated,
+    all-in-one mobile application (Android/iOS/Windows) pen-testing, malware
+    analysis and security assessment framework.
+    \url{https://github.com/MobSF/Mobile-Security-Framework-MobSF}
+
+    \bibitem{JD-GUI} Java Decompiler (JD-GUI) --- A standalone graphical utility
+    that displays Java sources from \texttt{.class} files.
+    \url{https://java-decompiler.github.io/}
+
+    \bibitem{Genymotion} Genymotion --- Android Virtual Device platform used as
+    dynamic analysis environment.
+    \url{https://www.genymotion.com/}
+
+    % ── Vulnerability and security references ────────────────────────────────
+    \bibitem{Janus} V.\ Apvrille, ``Janus: A new exploitation technique for
+    Android,'' GuardSquare Research, 2017.
+    \url{https://www.guardsquare.com/blog/new-android-vulnerability-allows-attackers-to-modify-apps-without-affecting-their-signatures}
+
+    \bibitem{StrandHogg} Promon Security Research Team,
+    ``StrandHogg 2.0 --- The 'evil twin' vulnerability,'' 2020.
+    \url{https://promon.co/security-news/strandhogg-2/}
+
+    \bibitem{CAPEv2-YARA} kevoreilly/threathive, ``IcedID YARA rule,''
+    CAPEv2 ruleset on GitHub.
+    \url{https://github.com/kevoreilly/CAPEv2}
+
+    % ── Android platform ─────────────────────────────────────────────────────
+    \bibitem{AndroidManifest} Android Developers,
+    ``App Manifest Overview.''
+    \url{https://developer.android.com/guide/topics/manifest/manifest-intro}
+
+    \bibitem{AndroidPermissions} Android Developers,
+    ``Permissions on Android.''
+    \url{https://developer.android.com/guide/topics/permissions/overview}
+
 \end{thebibliography}
