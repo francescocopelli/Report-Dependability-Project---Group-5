@@ -234,7 +234,48 @@ The dynamic analysis performed in Genymotion provided practical confirmation of 
 This behaviour is relevant because it indicates that the app is not limited to a simple transportation interface. Instead, it combines user-facing functionality with background services, ad-related activity, and network-driven logic, which is consistent with a repackaged or trojanized application structure.
 The emulator analysis therefore strengthens the overall assessment of the sample as suspicious. In combination with insecure HTTP traffic, exported components, hardcoded secrets, and multiple privacy trackers identified by other tools, the Genymotion observations support the conclusion that the APK presents a non-negligible security risk.
 
-\todo[inline]{Add Genymotion screenshots grid for \threer}
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[t]{0.30\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/apk_3/screenshots/screenshot-2026-06-27_17.08.24.516.png}
+        \caption{Side menu showing app settings, display preferences, and the database refresh button (\begin{CJK}{UTF8}{mj}데이터베이스 갱신\end{CJK}) under Additional Functions \threer}
+        \label{fig:genymotion3-1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.30\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/apk_3/screenshots/screenshot-2026-06-27_17.08.47.061.png}
+        \caption{Bus stop search screen showing a DB Error --- the app cannot retrieve route information and prompts a database refresh \threer}
+        \label{fig:genymotion3-2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.30\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/apk_3/screenshots/screenshot-2026-06-27_17.08.51.095.png}
+        \caption{Bus line search screen showing the same DB Error, confirming that neither route nor stop data can be retrieved without a database update \threer}
+        \label{fig:genymotion3-3}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}[t]{0.45\linewidth}
+        \centering
+        \includegraphics[width=0.65\linewidth]{img/apk_3/screenshots/screenshot-2026-06-27_17.09.00.214.png}
+        \caption{Side menu with a new error popup: the database download failed and the app requests a restart \threer}
+        \label{fig:genymotion3-4}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\linewidth}
+        \centering
+        \includegraphics[width=0.65\linewidth]{img/apk_3/screenshots/screenshot-2026-06-27_17.09.12.399.png}
+        \caption{App info screen for Jeonju Bus v3.6.5 highlighting the outdated local database (\texttt{20110520}, highlighted in red) against the latest available version (\texttt{20150504}) \threer}
+        \label{fig:genymotion3-5}
+    \end{subfigure}
+
+    \caption{Genymotion dynamic analysis screenshots of \threer}
+    \label{fig:genymotion3-grid}
+\end{figure}
 
 \section{Conclusion}
 
