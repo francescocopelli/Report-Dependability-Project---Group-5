@@ -79,15 +79,16 @@ The first three URLs are hosted on AWS Elastic Beanstalk and appear to retrieve 
 VirusTotal also records several alternative names under which the sample has been submitted across its 354 total submissions: \texttt{bus.apk}, \texttt{malbus.apk}, \texttt{lmh.android.gjbus.apk}, \texttt{00081.apk}, and others. The variety of filenames under which the same hash appears suggests that the sample has been distributed or repackaged under different labels, which is consistent with trojanised application behaviour.
 
 \subsection{Behavior}
+
 The behaviour tab indicates that the APK accesses file-related resources, builds JSON objects from filenames and absolute paths, reads data through buffer streams, and opens files from absolute paths.
 It also shows the use of reflection or control-based execution to start another application from the current one, which may indicate indirect execution of external components. In addition, the sample interacts with advertising and analytics libraries, schedules recording tasks, and reads files from the assets directory.
 
 Notably, this variant carries explicit \textbf{anti-analysis and VM evasion} indicators consistent with the third Malbus sample. VirusTotal tags the APK with \texttt{detect-debug-environment}, indicating that the application actively probes for debugger and sandbox contexts at runtime. The tag \texttt{checks-cpu-name} reveals hardware fingerprinting consistent with virtual machine detection, and \texttt{sets-process-name} indicates process name manipulation to obfuscate the running process from monitoring tools.
 
 Overall, the observed behaviour is more complex than that of a simple bus-information client and is compatible with a repackaged application that supports file-system interaction, dynamically driven actions, and active evasion of analysis environments.
-
+Additionally, as observed in the first Malbus sample, a crowdsourced YARA rule match was recorded for this sample: the IcedID structural rule from the CAPEv2 repository matched the binary. As discussed in Chapter 1, this does not imply family membership but confirms structural similarity with known dropper and loader architectures.
 \section{Static Analysis}
-
+The Java source code was decompiled using JD-GUI / Bytecodeviewer and inspected manually to identify classes and methods of interest.
 Static analysis shows that the application combines legitimate bus-related functionality with advertising SDKs, remote configuration mechanisms, native code, and update-like behaviour. This indicates that the APK is not limited to its declared purpose, but may also support conditional execution and payload delivery at runtime.
 
 \subsection{MainActivity.java}
@@ -206,8 +207,8 @@ Alternative submission names (354 submissions) & \texttt{bus.apk}, \texttt{malbu
     \caption{MobSF Scorecard \twor}
     \label{fig:mobsf_scorecard_two}
 \end{figure}
-
-MobSF highlights several security issues in the analyzed APK, confirming that the application exposes a broad attack surface. In particular, the scorecard shows problems related to signature schemes, outdated Android compatibility, exported components, insecure storage, and the presence of multiple privacy trackers.
+MobSF assigned a security score of 37/100 (Grade C, HIGH RISK) to this APK, confirming that the application exposes a broad attack surface.
+In particular, the scorecard shows problems related to signature schemes, outdated Android compatibility, exported components, insecure storage, and the presence of multiple privacy trackers.
 
 \subsection{Certificate Analysis}
 During the MobSF analysis, one unique certificate was found. The binary is signed with the \texttt{v1} signature scheme only, while \texttt{v2}, \texttt{v3}, and \texttt{v4} are absent. The certificate uses \texttt{SHA1withRSA}, with subject and issuer both identified as \texttt{C=ko, L=Gwangju, CN=Myoung-Hun Lee}. The validity interval spans from 2011-05-09 to 2061-04-26, and the reported hash algorithm is SHA-1. This signing configuration is weak from a security perspective because it relies on legacy mechanisms associated with known cryptographic and platform-level weaknesses, making it vulnerable to the Janus attack on Android 5.0--8.0.

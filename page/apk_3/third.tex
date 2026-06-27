@@ -85,10 +85,12 @@ VirusTotal's behaviour tab highlights several actions consistent with a suspicio
 
 Notably, this variant carries explicit \textbf{anti-analysis and VM evasion} indicators not observed in the previous samples. VirusTotal tags the APK with \texttt{detect-debug-environment}, indicating that the application actively probes for debugger and sandbox contexts at runtime. The tag \texttt{checks-cpu-name} reveals hardware fingerprinting consistent with virtual machine detection, and \texttt{sets-process-name} indicates process name manipulation to obfuscate the running process from monitoring tools. The sandbox verdict returned by Zenbox Linux was \texttt{CLEAN} (confidence 2), which is likely a direct consequence of these anti-analysis capabilities rather than a genuine absence of malicious behaviour.
 
-Overall, the observed behaviour suggests a complex application that performs file-system interaction, supports remote or dynamically driven actions, and is more evasion-aware than the previous Malbus variants.
+Overall, the observed behaviour suggests a complex application that performs file-system interaction, supports remote or dynamically driven actions, and is more evasion-aware than the previous Malbus variants.Additionally, a crowdsourced YARA rule match was recorded for this sample: the IcedID structural rule from the CAPEv2 repository (author: kevoreilly/threathive) matched the binary, consistent with the pattern observed across all three Malbus variants.
+
+
 
 \section{Static Analysis}
-
+The Java source code was decompiled using JD-GUI / Bytecodeviewer and inspected manually to identify classes and methods of interest.
 Static analysis shows that the application combines legitimate bus-related functionality with advertising SDKs, remote configuration mechanisms, native code, and update-like behaviour. This indicates that the APK is not limited to its declared purpose, but may also support conditional execution and payload delivery at runtime.
 
 \subsection{MainActivity.java}
