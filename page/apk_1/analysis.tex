@@ -85,8 +85,6 @@ In addition to the permission analysis, VirusTotal assigns several behavioural a
         \subsection{Behaviour}
         VirusTotal's behaviour tab highlights several actions consistent with a suspicious application profile. The APK accesses file-related resources, builds JSON objects from file names and absolute paths, reads data into buffer streams, and opens files from absolute paths. It also shows the use of reflection/control to start another application from the current one, which may indicate dynamic or indirect execution of external components. In addition, the app interacts with advertising and analytics libraries, scheduling recording tasks and reading files from the assets directory. Overall, the observed behaviour suggests a complex application that performs file-system interaction and may support remote or dynamic actions rather than a simple bus-information client.
 
-        Notably, the sandbox verdict provided by Zenbox Android classifies the sample as \texttt{CLEAN} with a confidence of 82\%. This result stands in contrast with the static detection rate of 40 out of 75 engines. The discrepancy is consistent with dropper-like evasion strategies: the malicious payload is not executed unconditionally at runtime, but may instead be triggered only under specific conditions --- such as receiving a remote command via GCM/FCM, or upon verification of environment properties retrieved from the AWS Elastic Beanstalk backend. This behaviour-dependent activation pattern makes sandbox-based dynamic analysis less reliable for this class of samples.
-
         Furthermore, a crowdsourced YARA rule match was recorded for this sample: the rule \texttt{IcedID}, from the ruleset \textit{IcedID} (author: \texttt{kevoreilly/threathive}, source: CAPEv2 on GitHub), matched the binary. While IcedID is historically associated with a Windows banking trojan, the matching rule in this context is a structural pattern rule targeting dropper and loader architectures. The match does not imply that the sample belongs to the IcedID family, but it does indicate that its internal structure shares characteristics with known advanced payload-delivery components, further reinforcing the dropper hypothesis.
 
     \section{Static Analysis}
@@ -181,25 +179,23 @@ This activity appears to be mainly cosmetic, since it exposes a public bus-relat
 
 \begin{longtable}{|p{0.45\textwidth}|p{0.45\textwidth}|}
 \hline
-\textbf{Suspicious Pattern} & \textbf{Explanation} \\
+\textbf{Suspicious Pattern} & \textbf{Explanation} \\\\
 \hline
-Multiple ad SDKs & Monetization through aggressive advertising and possible ad fraud. \\
+Multiple ad SDKs & Monetization through aggressive advertising and possible ad fraud. \\\\
 \hline
-Native libraries (JNI) & Executes code not visible to standard Java analysis tools. \\
+Native libraries (JNI) & Executes code not visible to standard Java analysis tools. \\\\
 \hline
-\texttt{REQUEST\_INSTALL\_PACKAGES} & Suggests dropper-like behavior and possible APK installation without market interaction. \\
+\texttt{REQUEST\_INSTALL\_PACKAGES} & Suggests dropper-like behavior and possible APK installation without market interaction. \\\\
 \hline
-Unencrypted HTTP endpoints & Data can be intercepted or modified through MITM attacks. \\
+Unencrypted HTTP endpoints & Data can be intercepted or modified through MITM attacks. \\\\
 \hline
-Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can change behavior based on remote values. \\
+Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can change behavior based on remote values. \\\\
 \hline
-Fragment and tab visibility manipulation & Suggests conditional or delayed functionality and may hide behavior from users and analysts. \\
+Fragment and tab visibility manipulation & Suggests conditional or delayed functionality and may hide behavior from users and analysts. \\\\
 \hline
-VT behavioural tags (\texttt{obfuscated}, \texttt{telephony}, \texttt{checks-gps}) & Confirm runtime evasion, device tracking via GPS, and telephony API interaction beyond the declared app purpose. \\
+VT behavioural tags (\texttt{obfuscated}, \texttt{telephony}, \texttt{checks-gps}) & Confirm runtime evasion, device tracking via GPS, and telephony API interaction beyond the declared app purpose. \\\\
 \hline
-Sandbox evasion (Zenbox Android) & \texttt{CLEAN} verdict (82\%) despite 40/75 static detections; consistent with condition-dependent payload activation and dropper-like design. \\
-\hline
-YARA match: \texttt{IcedID} rule & Structural similarity with known dropper/loader patterns detected via crowdsourced YARA; reinforces the hypothesis of an advanced payload-delivery architecture. \\
+YARA match: \texttt{IcedID} rule & Structural similarity with known dropper/loader patterns detected via crowdsourced YARA; reinforces the hypothesis of an advanced payload-delivery architecture. \\\\
 \hline
 \end{longtable}
 
@@ -278,6 +274,6 @@ The static inspection shows that the application is not limited to a simple bus-
 
 MobSF strengthens this conclusion by reporting a large number of high- and medium-severity issues, including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, hardcoded secrets, world-readable files, insecure WebView usage, and multiple privacy trackers. In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks, supporting the idea that some behavior is driven at runtime rather than being fully visible from static inspection.
 
-The VirusTotal JSON report provides additional evidence that reinforces and extends the findings described above. The crowdsourced YARA match with the IcedID structural rule, the explicit behavioural tags assigned by the platform (\texttt{obfuscated}, \texttt{telephony}, \texttt{checks-gps}, \texttt{reflection}), and the discrepancy between the static detection rate (40/75 engines flagging the sample as malicious) and the Zenbox Android sandbox verdict (\texttt{CLEAN}, 82\% confidence) collectively point to a deliberate evasion design. The application is likely built to withhold its malicious payload under controlled execution environments, activating only upon receipt of a remote trigger --- a pattern consistent with advanced trojanised droppers rather than simple adware or opportunistic malware.
+The VirusTotal JSON report provides additional evidence that reinforces and extends the findings described above. The crowdsourced YARA match with the IcedID structural rule and the explicit behavioural tags assigned by the platform (\texttt{obfuscated}, \texttt{telephony}, \texttt{checks-gps}, \texttt{reflection}) collectively point to a deliberate evasion design. The application is likely built to withhold its malicious payload under controlled execution environments, activating only upon receipt of a remote trigger --- a pattern consistent with advanced trojanised droppers rather than simple adware or opportunistic malware.
 
 Overall, the APK should be treated as unsafe. Even if part of its visible functionality appears legitimate, the combination of insecure communication, suspicious permissions, and evasive implementation choices shows a clear mismatch between the declared purpose of the app and its actual security posture.

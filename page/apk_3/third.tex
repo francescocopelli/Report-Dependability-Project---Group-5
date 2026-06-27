@@ -16,7 +16,7 @@
 \end{figure}
 
 \subsection{Detection}
-The antimalware analysis performed with VirusTotal shows that \texttt{42/78} security vendors flagged the file as malicious, while \texttt{29/78} vendors classified it as a secure file, \texttt{1/78} reported a timeout error, and \texttt{7/78} vendors reported an \textit{Unable to process file type} error.
+The antimalware analysis performed with VirusTotal shows that \texttt{38/75} security vendors flagged the file as malicious, while \texttt{29/75} vendors classified it as a secure file, \texttt{1/75} reported a failure error, and \texttt{7/75} vendors reported an \textit{Unable to process file type} error.
 Most engines identify the sample as a generic Android trojan, and some of them (e.g.\ CTX, Bitdefender, Arcabit) further classify it as a downloader-family specimen. A few vendors instead label it only as generic Android malware, without specifying a precise family.
 It is also noteworthy that some well-known vendors, including Microsoft Defender, McAfee, and Malwarebytes, did not identify the file as malicious.
 
@@ -34,25 +34,29 @@ It is also noteworthy that some well-known vendors, including Microsoft Defender
     \end{subfigure}
 \end{figure}
 
+VirusTotal assigns the sample a reputation score of \texttt{0} and a suggested threat label of \texttt{trojan.andr/apkdownloader}. The popular threat classification aggregated across all detecting engines identifies ``trojan'' as the dominant category (17 engines), followed by ``downloader'' (5 engines). Notably, the engine Tencent identifies the sample under the specific name \texttt{a.privacy.MalBuslmh}, a designation that directly references the APK package namespace \texttt{lmh}, confirming that this specific sample is known to the threat intelligence community.
+
 \subsection{Details}
 Here is a detailed analysis of the permissions which are required by the APK, declared in the Manifest file (Fig.\ \ref{fig:manifest_third}):
 \begin{enumerate}
 \item \textbf{android.permission.ACCESS\_FINE\_LOCATION} $\rightarrow$ Allows the precise location of the device (GPS, mobile networks, Wi-Fi).
 \item \textbf{android.permission.ACCESS\_COARSE\_LOCATION} $\rightarrow$ Provides approximate location (based on cellular towers and Wi-Fi).
+\item \textbf{android.permission.ACCESS\_LOCATION\_EXTRA\_COMMANDS} $\rightarrow$ Allows additional commands to be sent to the location provider (rarely used in legitimate apps).
 \item \textbf{android.permission.READ\_EXTERNAL\_STORAGE} $\rightarrow$ Allows reading files and data saved on external memory (photos, documents, downloads).
 \item \textbf{android.permission.WRITE\_EXTERNAL\_STORAGE} $\rightarrow$ Allows you to create or edit files on external storage.
+\item \textbf{com.android.browser.permission.WRITE\_HISTORY\_BOOKMARKS} $\rightarrow$ Allows editing of history and bookmarks in the stock Android browser.
+\item \textbf{com.google.android.providers.gsf.permission.READ\_GSERVICES} $\rightarrow$ Reads Google Services Framework settings and data (e.g.\ device ID, GCM configurations).
 \item \textbf{android.permission.INTERNET} $\rightarrow$ Enables any network connection (HTTP, sockets, DNS).
 \item \textbf{android.permission.ACCESS\_NETWORK\_STATE} $\rightarrow$ Reads the status of network connections (Wi-Fi, mobile data).
 \item \textbf{android.permission.ACCESS\_WIFI\_STATE} $\rightarrow$ Gets information about Wi-Fi networks (SSID, BSSID, status).
 \item \textbf{android.permission.CHANGE\_WIFI\_STATE} $\rightarrow$ Changes Wi-Fi status (enable/disable, connects to networks).
 \item \textbf{android.permission.WAKE\_LOCK} $\rightarrow$ Prevents the device from entering sleep mode.
 \item \textbf{android.permission.VIBRATE} $\rightarrow$ Controls the vibration engine.
-\item \textbf{android.permission.CALL\_PHONE} $\rightarrow$ Allows the app to initiate phone calls without user interaction.
-\item \textbf{android.permission.RECORD\_AUDIO} $\rightarrow$ Allows recording audio using the device microphone.
-\item \textbf{android.permission.READ\_PHONE\_STATE} $\rightarrow$ Allows read-only access to phone state, including the current cellular network information, the status of any ongoing calls.
 \item \textbf{lmh.android.jjbus.permission.C2D\_MESSAGE} $\rightarrow$ Enables reception of cloud-to-device messages (C2DM/GCM/FCM).
 \item \textbf{com.google.android.c2dm.permission.RECEIVE} $\rightarrow$ Allows push notifications via Google Cloud Messaging (GCM/FCM).
 \end{enumerate}
+
+In addition to the permission analysis, VirusTotal assigns several behavioural and structural tags to the file: \texttt{detect-debug-environment}, \texttt{sets-process-name}, \texttt{checks-cpu-name}, \texttt{android}, and \texttt{apk}. The tags \texttt{detect-debug-environment}, \texttt{checks-cpu-name}, and \texttt{sets-process-name} are explicit anti-analysis and VM evasion indicators. The \texttt{detect-debug-environment} tag indicates that the application actively probes for debugger and sandbox contexts at runtime, \texttt{checks-cpu-name} reveals hardware fingerprinting consistent with virtual machine detection, and \texttt{sets-process-name} indicates process name manipulation to obfuscate the running process from monitoring tools.
 
 \subsection{Relations}
 \begin{figure}[h]
@@ -79,7 +83,7 @@ The contacted domains are: \texttt{adlibr.com}, \texttt{busappmanager.elasticbea
 \subsection{Behavior}
 VirusTotal's behaviour tab highlights several actions consistent with a suspicious application profile. The APK accesses file-related resources, builds JSON objects from filenames and absolute paths, reads data into buffer streams, and opens files from absolute paths. It also shows the use of reflection or control-based execution to start another application from the current one, which may indicate dynamic or indirect execution of external components. In addition, the app interacts with advertising and analytics libraries, scheduling recording tasks and reading files from the assets directory.
 
-Notably, this variant carries explicit \textbf{anti-analysis and VM evasion} indicators not observed in the previous samples. VirusTotal tags the APK with \texttt{detect-debug-environment}, indicating that the application actively probes for debugger and sandbox contexts at runtime. The tag \texttt{checks-cpu-name} reveals hardware fingerprinting consistent with virtual machine detection, and \texttt{sets-process-name} indicates process name manipulation to obfuscate the running process from monitoring tools. The sandbox verdict returned by Zenbox Linux was \texttt{CLEAN}, which is likely a direct consequence of these anti-analysis capabilities rather than a genuine absence of malicious behaviour.
+Notably, this variant carries explicit \textbf{anti-analysis and VM evasion} indicators not observed in the previous samples. VirusTotal tags the APK with \texttt{detect-debug-environment}, indicating that the application actively probes for debugger and sandbox contexts at runtime. The tag \texttt{checks-cpu-name} reveals hardware fingerprinting consistent with virtual machine detection, and \texttt{sets-process-name} indicates process name manipulation to obfuscate the running process from monitoring tools. The sandbox verdict returned by Zenbox Linux was \texttt{CLEAN} (confidence 2), which is likely a direct consequence of these anti-analysis capabilities rather than a genuine absence of malicious behaviour.
 
 Overall, the observed behaviour suggests a complex application that performs file-system interaction, supports remote or dynamically driven actions, and is more evasion-aware than the previous Malbus variants.
 
@@ -174,25 +178,25 @@ This activity appears to be mainly cosmetic. Its role seems to be presenting the
 
 \begin{longtable}{|p{0.45\textwidth}|p{0.45\textwidth}|}
 \hline
-\textbf{Suspicious Pattern} & \textbf{Explanation} \\
+\textbf{Suspicious Pattern} & \textbf{Explanation} \\\\
 \hline
-Multiple ad SDKs & Monetization through aggressive advertising and possible ad fraud (AdMob, Firebase, AdLib, Crashlytics). \\
+Multiple ad SDKs & Monetization through aggressive advertising and possible ad fraud (AdMob, Firebase, AdLib, Crashlytics). \\\\
 \hline
-Native libraries (JNI) & \texttt{libAudio3.0.so} present for multiple architectures; lacks stack canary and fortify function protections. \\
+Native libraries (JNI) & \texttt{libAudio3.0.so} present for multiple architectures; lacks stack canary and fortify function protections. \\\\
 \hline
-\texttt{REQUEST\_INSTALL\_PACKAGES} & Suggests dropper-like behaviour and possible APK installation without market interaction. \\
+\texttt{REQUEST\_INSTALL\_PACKAGES} & Suggests dropper-like behaviour and possible APK installation without market interaction. \\\\
 \hline
-Unencrypted HTTP endpoints & Data to \texttt{jeonjuits.go.kr} and AWS Elastic Beanstalk can be intercepted or modified through MITM attacks. \\
+Unencrypted HTTP endpoints & Data to \texttt{jeonjuits.go.kr} and AWS Elastic Beanstalk can be intercepted or modified through MITM attacks. \\\\
 \hline
-Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can change behaviour based on remote values without a new release. \\
+Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can change behaviour based on remote values without a new release. \\\\
 \hline
-Fragment and tab visibility manipulation & Suggests conditional or delayed functionality and may hide behaviour from users and analysts. \\
+Fragment and tab visibility manipulation & Suggests conditional or delayed functionality and may hide behaviour from users and analysts. \\\\
 \hline
-Hardcoded secrets & API keys and encrypted strings embedded in source (\texttt{adpostkey}, \texttt{adlibkey}, hash keys). \\
+Hardcoded secrets & API keys and encrypted strings embedded in source (\texttt{adpostkey}, \texttt{adlibkey}, hash keys). \\\\
 \hline
-Microphone and phone call access & \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} are inconsistent with a bus-information service and widen the attack surface significantly. \\
+Microphone and phone call access & \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} are inconsistent with a bus-information service and widen the attack surface significantly. \\\\
 \hline
-Anti-analysis \& VM evasion & Detects debugger, checks CPU name, sets process name; evasion not present in previous Malbus samples. \\
+Anti-analysis \& VM evasion & Detects debugger, checks CPU name, sets process name; evasion not present in previous Malbus samples. \\\\
 \hline
 \end{longtable}
 
