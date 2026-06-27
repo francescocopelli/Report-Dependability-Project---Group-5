@@ -39,7 +39,8 @@ The most security-relevant permissions present in all samples are:
     \item GCM/FCM push messaging --- allows remote triggering of behaviour.
 \end{itemize}
 
-The main difference is that v1.0.3 additionally declares \texttt{WRITE\_HISTORY\_BOOKMARKS} and \texttt{READ\_GSERVICES}, which are absent in the later versions, suggesting a minor refinement of the permission scope in subsequent releases.
+Two differences emerge across versions. First, v1.0.3 additionally declares \texttt{WRITE\_HISTORY\_BOOKMARKS} and \texttt{READ\_GSERVICES}, which are absent in the later versions, suggesting a minor refinement of the permission scope in subsequent releases.
+Second, v3.6.5 uniquely declares \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO}, which are not present in v1.0.3 or v3.3.7, indicating an expanded capability to interact with device telephony and audio at the hardware level.
 
 \section{Behavioural Tags and Evasion Capabilities}
 
@@ -86,28 +87,52 @@ The following structural elements are common to all three samples:
 
 MobSF confirms consistent and severe security issues across all three samples.
 All APKs share the same certificate signing profile: SHA-1 with RSA, v1 scheme only, issued by CN=Myoung-Hun Lee --- making all three vulnerable to the Janus attack on Android 5.0--8.0.
+Notably, v3.6.5 received an explicit MobSF risk score of 38/100 (Grade C, HIGH RISK), while the other two samples did not produce a numerical score in the report.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
+\textbf{Finding (HIGH severity)} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
 \hline
 Janus vulnerability (v1 signing only) & \checkmark & \checkmark & \checkmark \\
 SHA-1 weak hashing & \checkmark & \checkmark & \checkmark \\
 Low minSdk (14) & \checkmark & \checkmark & \checkmark \\
-Task Hijacking / StrandHogg & \checkmark & \checkmark & \checkmark \\
+Task Hijacking \& StrandHogg & \checkmark & \checkmark & StrandHogg 2.0 only \\
+Debug configuration & \checkmark & \checkmark & \checkmark \\
+Weak encryption in AdLib library & \checkmark & \checkmark & $\times$ \\
 World-readable file / shared preference & \checkmark & \checkmark & \checkmark \\
-Hardcoded secrets & \checkmark & \checkmark & \checkmark \\
 Privacy trackers ($>$8) & \checkmark & \checkmark & \checkmark \\
-INSTALL\_PACKAGES external permission & \checkmark & \checkmark & \checkmark \\
+libAudio3.0: no stack canary / PIE & $\times$ & $\times$ & \checkmark \\
 High severity findings (count) & 9 & 9 & 9 \\
 \hline
 \end{tabular}
 \caption{MobSF high-severity findings across the three APK samples}
 \end{table}
 
-The identical number of high-severity findings (9) across all three samples further confirms the shared codebase and the lack of any remediation effort between releases.
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Finding (MEDIUM severity)} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
+\hline
+\texttt{android:allowBackup=true} & \checkmark & \checkmark & \checkmark \\
+Exported/unprotected components & \checkmark & \checkmark & \checkmark \\
+INSTALL\_PACKAGES external permission & \checkmark & \checkmark & \checkmark \\
+Read/write external storage & \checkmark & \checkmark & \checkmark \\
+Hardcoded secrets & \checkmark & \checkmark & \checkmark \\
+Insecure WebView usage & \checkmark & \checkmark & \checkmark \\
+Insecure RNG & \checkmark & \checkmark & \checkmark \\
+MD5 weak hashing & \checkmark & \checkmark & \checkmark \\
+SQL injection via raw queries & \checkmark & \checkmark & \checkmark \\
+CALL\_PHONE / RECORD\_AUDIO permissions & $\times$ & $\times$ & \checkmark \\
+\hline
+\end{tabular}
+\caption{MobSF medium-severity findings across the three APK samples}
+\end{table}
+
+The high-severity count is identical (9) across all three samples, but the composition differs slightly: v3.6.5 replaces the weak AdLib encryption finding with a native library hardening issue (\texttt{libAudio3.0} compiled without stack canary and PIE), and shows only StrandHogg 2.0 rather than the full Task Hijacking vulnerability present in v1.0.3 and v3.3.7.
+At the medium-severity level, v3.6.5 uniquely introduces \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} permission warnings, consistent with its expanded hardware interaction surface observed in the static analysis.
 
 \section{YARA Rule Matches}
 
@@ -119,5 +144,5 @@ This consistent structural match across all three variants reinforces the hypoth
 
 The comparative analysis confirms that Malbus v1.0.3, v3.3.7, and v3.6.5 are three regional variants of the same trojanised application family, sharing an identical malicious core while adapting the legitimate-facing functionality to different South Korean cities (Changwon, Gwangju, Jeonju).
 
-The key evolution across versions is the progressive addition of anti-analysis and VM evasion capabilities, which are absent in v1.0.3 but fully present in v3.3.7 and v3.6.5.
-In all other dimensions --- permissions, architecture, signing, MobSF findings, advertising SDKs, and dropper logic --- the three samples are functionally identical, indicating a mature and deliberately maintained malware family rather than opportunistic or independent variants.
+The key evolution across versions is twofold: the progressive addition of anti-analysis and VM evasion capabilities (absent in v1.0.3, fully present in v3.3.7 and v3.6.5), and the expansion of hardware interaction permissions in v3.6.5 (\texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}) combined with native library hardening weaknesses specific to that version.
+In all other dimensions --- permissions, architecture, signing, MobSF core findings, advertising SDKs, and dropper logic --- the three samples are functionally identical, indicating a mature and deliberately maintained malware family rather than opportunistic or independent variants.
