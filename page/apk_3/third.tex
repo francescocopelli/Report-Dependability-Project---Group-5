@@ -61,10 +61,27 @@ Here is a detailed analysis of the permissions which are required by the APK, de
     \caption{VirusTotal Relations for \threer}
     \label{fig:virustotal_3_relations}
 \end{figure}
-\todo[inline]{Describe contacted domains, URLs and IP addresses from VirusTotal Relations tab}
+
+VirusTotal shows the contacted domains, URLs, and IP addresses associated with the APK. The five contacted URLs are all served over plain HTTP, which means their content can be intercepted or modified in transit:
+
+\begin{itemize}
+    \item \texttt{http://busappmanager.elasticbeanstalk.com/v1/category/list.json}
+    \item \texttt{http://busappmanager.elasticbeanstalk.com/v1/env/get.json}
+    \item \texttt{http://busappmanager.elasticbeanstalk.com/v1/issue/my.json}
+    \item \texttt{http://smartapps.cafe24.com/jjbus\_android/environment.json}
+    \item \texttt{http://gwk.adlibr.com/ad/config/init}
+\end{itemize}
+
+The first three URLs are hosted on AWS Elastic Beanstalk (\texttt{busappmanager.elasticbeanstalk.com}) and appear to retrieve the app category list, runtime environment configuration, and remote issue data from a centralised backend. This mechanism is consistent with dropper-like behaviour, as it allows the app to modify its functionality without requiring a new APK release. The fourth URL (\texttt{smartapps.cafe24.com}) retrieves a configuration file specific to this \texttt{jjbus} variant, distinguishing it from the previous samples which contacted different regional \texttt{cafe24.com} endpoints. The domain \texttt{gwk.adlibr.com/ad/config/init} serves the advertising configuration and was already observed in the previous Malbus samples; it responds only to POST requests, otherwise returning \texttt{\{"result":4003,"message":"keymediakey"\}}.
+
+The contacted domains are: \texttt{adlibr.com}, \texttt{busappmanager.elasticbeanstalk.com}, \texttt{cafe24.com}, \texttt{elasticbeanstalk.com}, \texttt{gwk.adlibr.com}, and \texttt{smartapps.cafe24.com}. No flagged domains were detected by VirusTotal at the time of analysis. No contacted IP addresses were reported directly in the Relations tab.
 
 \subsection{Behavior}
-\todo[inline]{Describe VirusTotal Behavior tab findings for \threer}
+VirusTotal's behaviour tab highlights several actions consistent with a suspicious application profile. The APK accesses file-related resources, builds JSON objects from filenames and absolute paths, reads data into buffer streams, and opens files from absolute paths. It also shows the use of reflection or control-based execution to start another application from the current one, which may indicate dynamic or indirect execution of external components. In addition, the app interacts with advertising and analytics libraries, scheduling recording tasks and reading files from the assets directory.
+
+Notably, this variant carries explicit \textbf{anti-analysis and VM evasion} indicators not observed in the previous samples. VirusTotal tags the APK with \texttt{detect-debug-environment}, indicating that the application actively probes for debugger and sandbox contexts at runtime. The tag \texttt{checks-cpu-name} reveals hardware fingerprinting consistent with virtual machine detection, and \texttt{sets-process-name} indicates process name manipulation to obfuscate the running process from monitoring tools. The sandbox verdict returned by Zenbox Linux was \texttt{CLEAN}, which is likely a direct consequence of these anti-analysis capabilities rather than a genuine absence of malicious behaviour.
+
+Overall, the observed behaviour suggests a complex application that performs file-system interaction, supports remote or dynamically driven actions, and is more evasion-aware than the previous Malbus variants.
 
 \section{Static Analysis}
 
@@ -165,7 +182,7 @@ Native libraries (JNI) & \texttt{libAudio3.0.so} present for multiple architectu
 \hline
 \texttt{REQUEST\_INSTALL\_PACKAGES} & Suggests dropper-like behaviour and possible APK installation without market interaction. \\
 \hline
-Unencrypted HTTP endpoints & Data to \texttt{jeonjuits.go.kr} can be intercepted or modified through MITM attacks. \\
+Unencrypted HTTP endpoints & Data to \texttt{jeonjuits.go.kr} and AWS Elastic Beanstalk can be intercepted or modified through MITM attacks. \\
 \hline
 Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can change behaviour based on remote values without a new release. \\
 \hline
@@ -174,6 +191,8 @@ Fragment and tab visibility manipulation & Suggests conditional or delayed funct
 Hardcoded secrets & API keys and encrypted strings embedded in source (\texttt{adpostkey}, \texttt{adlibkey}, hash keys). \\
 \hline
 Microphone and phone call access & \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} are inconsistent with a bus-information service and widen the attack surface significantly. \\
+\hline
+Anti-analysis \& VM evasion & Detects debugger, checks CPU name, sets process name; evasion not present in previous Malbus samples. \\
 \hline
 \end{longtable}
 
@@ -189,7 +208,7 @@ Microphone and phone call access & \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDI
 MobSF assigned a security score of \textbf{38/100} (grade C, HIGH RISK) to this APK, confirming that the application exposes a broad attack surface. The scorecard shows a high concentration of High and Medium severity issues, alongside informational and secure findings. Problems span six categories: certificate, manifest, code, trackers, secrets, and permissions, with 8 privacy trackers detected out of 432 checked and 4 permission hotspots flagged as critical.
 
 \subsection{Certificate Analysis}
-During the MobSF analysis, one unique certificate was found. The binary is signed with the \texttt{v1} signature scheme only, while \texttt{v2}, \texttt{v3}, and \texttt{v4} are absent. The certificate uses \texttt{SHA1withRSA}, which is considered weak due to known hash-collision vulnerabilities, making it vulnerable to the Janus attack on Android 5.0--8.0. This signing configuration relies on legacy mechanisms associated with known cryptographic and platform-level weaknesses.
+During the MobSF analysis, one unique certificate was found. The binary is signed with the \texttt{v1} signature scheme only, while \texttt{v2}, \texttt{v3}, and \texttt{v4} are absent. The certificate uses \texttt{SHA1withRSA}, with subject and issuer both identified as \texttt{C=ko, L=Jeonju, CN=Myoung-Hun Lee}. The validity interval spans from 2011-05-25 to 2061-05-12, and the reported hash algorithm is SHA-1. This signing configuration is weak from a security perspective because it relies on legacy mechanisms associated with known cryptographic and platform-level weaknesses, making it vulnerable to the Janus attack on Android 5.0--8.0.
 
 \subsection{High Severity Findings}
 MobSF reports multiple high-severity issues across certificate, manifest, and code categories. From the certificate, the application is vulnerable to the Janus attack due to v1-only signing, and SHA-1 is used as the hash algorithm. From the manifest, the low minimum SDK version (\texttt{minSdk=14}) allows installation on older unpatched Android versions, and the StrandHogg~2.0 weakness is present in the Google app-invite preview activity.\\
