@@ -88,6 +88,7 @@ In addition to the permission analysis, VirusTotal assigns several behavioural a
         Furthermore, a crowdsourced YARA rule match was recorded for this sample: the rule \texttt{IcedID}, from the ruleset \textit{IcedID} (author: \texttt{kevoreilly/threathive}, source: CAPEv2 on GitHub), matched the binary. While IcedID is historically associated with a Windows banking trojan, the matching rule in this context is a structural pattern rule targeting dropper and loader architectures. The match does not imply that the sample belongs to the IcedID family, but it does indicate that its internal structure shares characteristics with known advanced payload-delivery components, further reinforcing the dropper hypothesis.
 
     \section{Static Analysis}
+    The Java source code was decompiled using JD-GUI / Bytecodeviewer and inspected manually to identify classes and methods of interest.
     Static analysis reveals that the application combines legitimate bus-related functionality with advertising SDKs, remote configuration mechanisms, native code, and update-like behavior. These elements suggest that the APK is not limited to its declared purpose, but may also support conditional execution and payload delivery at runtime.
 
     \subsection{MainActivity.java}
@@ -206,7 +207,8 @@ YARA match: \texttt{IcedID} rule & Structural similarity with known dropper/load
     \caption{MobSF Scorecard \oner}
     \label{fig:mobsf_scorecard_one}
 \end{figure}
-MobSF highlights several security issues in the analyzed APK, confirming that the application exposes a broad attack surface. In particular, the scorecard shows problems related to signature schemes, outdated Android compatibility, exported components, insecure storage, and the presence of multiple privacy trackers.
+MobSF highlights several security issues in the analyzed APK, confirming that the application exposes a broad attack surface.
+In particular, the scorecard shows problems related to signature schemes, outdated Android compatibility, exported components, insecure storage, and the presence of multiple privacy trackers.
 
 \subsection{Certificate Analysis}
 During the analysis, MobSF identified one unique certificate. The binary is signed only with the v1 signature scheme, while v2, v3, and v4 are not present. The certificate uses \texttt{SHA1withRSA}, with the following subject and issuer: \texttt{C=ko, L=Jeonju, CN=Myoung-Hun Lee}. Since the app relies on a legacy signing scheme and a weak hash algorithm, it is exposed to known cryptographic and platform-level weaknesses.
@@ -220,7 +222,8 @@ The medium-severity findings are mainly related to insecure configuration and co
 The scan also identifies insecure storage and code-quality issues. The application can read and write external storage, which exposes data to other apps on the device. MobSF further detects hardcoded secrets in multiple files, insecure WebView usage, temporary file creation, an insecure random number generator, possible SQL injection through raw queries, and the use of MD5, which is considered weak due to collision resistance problems.
 
 \subsection{Low Severity Findings}
-MobSF reports one informational issue: the application logs information, including potentially sensitive data. It also reports two secure findings: the use of SSL communication and the presence of root detection capabilities. Finally, the scorecard flags one hotspot related to a critical permission, reinforcing the idea that the app is highly sensitive from a security perspective.
+
+MobSF reports one informational issue: the application logs information, including potentially sensitive data. This finding is classified as LOW severity in this variant; in \threer the same behaviour is elevated to HIGH severity due to a broader set of sensitive fields being exposed. It also reports two secure findings: the use of SSL communication and the presence of root detection capabilities. Finally, the scorecard flags one hotspot related to a critical permission, reinforcing the idea that the app is highly sensitive from a security perspective.
 
 \subsection{Overall Assessment}
 Overall, MobSF confirms that the APK is not a simple transportation application. The combination of weak signing, exported components, insecure storage, dynamic installation capabilities, and ad/tracking infrastructure suggests an application with a high security risk and behavior consistent with a trojanized or heavily repurposed app.
