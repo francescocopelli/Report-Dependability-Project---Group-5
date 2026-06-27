@@ -8,13 +8,28 @@
      \item \two, (from now on will be "\twor") see Chapter \ref{two}
      \item \three, (from now on will be "\threer") see Chapter \ref{three}
  \end{enumerate}
- 
+
+\section{Background: the Malbus Family}
+
+The three samples analysed in this project belong to a malware family publicly documented by McAfee researchers under the name \textbf{Malbus}. The family was first described in a McAfee Mobile Research report detailing a series of trojanised Android applications masquerading as legitimate bus-information services targeting South Korean users. The malicious apps were distributed on the Google Play Store and, once installed, silently contacted remote servers to download and execute additional payloads on the victim device.
+
+The infection chain documented by McAfee, illustrated in Fig.\ \ref{fig:malbus_mcafee_chain}, unfolds across six stages. The user first downloads the apparently legitimate bus app from Google Play (step~1). The app then contacts a Malware Distribution Server to request an additional payload (step~2), which is delivered and installed on the device as a fake plug-in (step~3). A second download delivers and executes the core trojan (step~4). From this point on, the infected device communicates bidirectionally with a Command-and-Control (C2) server to receive and handle commands (step~5), while a separate Upload Server is used to exfiltrate files of interest collected from the device (step~6).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{img/common/malbus_mcafee_chain.jpg}
+    \caption{Malbus infection chain as documented by McAfee Mobile Research. The six-step flow covers initial distribution via Google Play through to payload execution, C2 communication, and file exfiltration.}
+    \label{fig:malbus_mcafee_chain}
+\end{figure}
+
+The three APK samples provided for this project correspond to different versions of the same repackaged application series (\texttt{cwbus}, \texttt{gjbus}, \texttt{jjbus}), each targeting a different South Korean city. They represent successive releases of the Malbus dropper, allowing a comparative analysis of how the malicious infrastructure and evasion techniques evolved across versions. The findings from the individual analyses are consolidated in Chapter~\ref{chap:comparison}.
+
 \section{Tools}
   During the project, three main analysis tools have been used to identity the malicious behavior of the samples:
  \begin{itemize}
      \item VirusTotal \link{virustotal.com} (anti-malware analysis)
      \begin{itemize}
-         \item It’s a web tool that allows to submit samples and analyze them with several antivirus or anti-malware programs
+         \item It's a web tool that allows to submit samples and analyze them with several antivirus or anti-malware programs
          \item This tool was used to gain a starting insight on the already existing knowledge about the specific malicious sample.
      \end{itemize}
      \item MobSF \link{github.com/MobSF/Mobile-Security-Framework-MobSF} (static and dynamic analysis)
