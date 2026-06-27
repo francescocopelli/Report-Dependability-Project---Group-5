@@ -33,7 +33,7 @@ It is also noteworthy that some well-known vendors, including Microsoft Defender
         \label{fig:virustotal_3_detections}
 \end{figure}
 
-VirusTotal assigns the sample a reputation score of \texttt{0} and a suggested threat label of \texttt{trojan.andr /apkdownloader}. The popular threat classification aggregated across all detecting engines identifies ``trojan'' as the dominant category (17 engines), followed by ``downloader'' (5 engines). Notably, the engine Tencent identifies the sample under the specific name \texttt{a.privacy.MalBuslmh}, a designation that directly references the APK package namespace \texttt{lmh}, confirming that this specific sample is known to the threat intelligence community.
+VirusTotal assigns the sample a reputation score of \texttt{0} and a suggested threat label of \texttt{trojan.andr/apkdownloader}. The popular threat classification aggregated across all detecting engines identifies ``trojan'' as the dominant category (17 engines), followed by ``downloader'' (5 engines). Notably, the engine Tencent identifies the sample under the specific name \texttt{a.privacy.MalBuslmh}, a designation that directly references the APK package namespace \texttt{lmh}, confirming that this specific sample is known to the threat intelligence community.
 
 \subsection{Details}
 Here is a detailed analysis of the permissions which are required by the APK, declared in the Manifest file (Fig.\ \ref{fig:manifest_third}):
@@ -75,14 +75,14 @@ VirusTotal shows the contacted domains, URLs, and IP addresses associated with t
     \item \texttt{http://gwk.adlibr.com/ad/config/init}
 \end{itemize}
 
-The first three URLs are hosted on AWS Elastic Beanstalk (\texttt{busappmanager.elasticbeanstalk.com}) and appear to retrieve the app category list, runtime environment configuration, and remote issue data from a centralised backend. This mechanism is consistent with dropper-like behaviour, as it allows the app to modify its functionality without requiring a new APK release. The fourth URL (\texttt{smartapps.cafe24.com}) retrieves a configuration file specific to this \texttt{jjbus} variant, distinguishing it from the previous samples which contacted different regional \texttt{cafe24.com} endpoints. The domain \texttt{gwk.adlibr.com/ad/config/init} serves the advertising configuration and was already observed in the previous Malbus samples; it responds only to POST requests, otherwise returning \texttt{\{"result":4003,"message":"keymediakey"\}}.
+The first three URLs are hosted on AWS Elastic Beanstalk (\texttt{busappmanager.elasticbeanstalk.com}) and appear to retrieve the app category list, runtime environment configuration, and remote issue data from a centralised backend. This mechanism is consistent with dropper-like behaviour, as it allows the app to modify its functionality without requiring a new APK release. The fourth URL (\texttt{smartapps.cafe24.com}) retrieves a configuration file specific to this \texttt{jjbus} variant, distinguishing it from the previous samples which contacted different regional \texttt{cafe24.com} endpoints. The domain \texttt{gwk.adlibr.com/ad/config/init} serves the advertising configuration and was already observed in the previous Malbus samples; it responds only to POST requests, otherwise returning \texttt{\{"result":4003,"message":"key\_media\_key"\}}.
 
 The contacted domains are: \texttt{adlibr.com}, \texttt{busappmanager.elasticbeanstalk.com}, \texttt{cafe24.com}, \texttt{elasticbeanstalk.com}, \texttt{gwk.adlibr.com}, and \texttt{smartapps.cafe24.com}. No flagged domains were detected by VirusTotal at the time of analysis. No contacted IP addresses were reported directly in the Relations tab.
 
 \subsection{Behavior}
 VirusTotal's behaviour tab highlights several actions consistent with a suspicious application profile. The APK accesses file-related resources, builds JSON objects from filenames and absolute paths, reads data into buffer streams, and opens files from absolute paths. It also shows the use of reflection or control-based execution to start another application from the current one, which may indicate dynamic or indirect execution of external components. In addition, the app interacts with advertising and analytics libraries, scheduling recording tasks and reading files from the assets directory.
 
-Notably, this variant carries explicit \textbf{anti-analysis and VM evasion} indicators not observed in the previous samples. VirusTotal tags the APK with \texttt{detect-debug-environment}, indicating that the application actively probes for debugger and sandbox contexts at runtime. The tag \texttt{checks-cpu-name} reveals hardware fingerprinting consistent with virtual machine detection, and \texttt{sets-process-name} indicates process name manipulation to obfuscate the running process from monitoring tools.
+As detailed in the previous section, this variant carries explicit \textbf{anti-analysis and VM evasion} indicators (\texttt{detect-debug-environment}, \texttt{checks-cpu-name}, \texttt{sets-process-name}) not observed in \oner\ but consistent with the pattern introduced in \twor.
 
 Overall, the observed behaviour suggests a complex application that performs file-system interaction, supports remote or dynamically driven actions, and is more evasion-aware than the previous Malbus variants. Additionally, a crowdsourced YARA rule match was recorded for this sample: the IcedID structural rule from the CAPEv2 repository (author: kevoreilly/threathive) matched the binary, consistent with the pattern observed across all three Malbus variants.
 
@@ -194,7 +194,7 @@ Fragment and tab visibility manipulation & Suggests conditional or delayed funct
 \hline
 Hardcoded secrets & API keys and encrypted strings embedded in source (\texttt{adpostkey}, \texttt{adlibkey}, hash keys). \\\\
 \hline
-Anti-analysis \& VM evasion & Detects debugger, checks CPU name, sets process name; evasion not present in \oner\ but confirmed in both \twor\ and \threer. \\\\
+Anti-analysis \& VM evasion & Active evasion capabilities absent in \oner\ but present in both \twor\ and \threer. \\\\
 \hline
 \end{longtable}
 
