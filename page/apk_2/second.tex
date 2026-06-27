@@ -223,8 +223,7 @@ Several activities and receivers are exported or not properly protected, includi
 The scan further identifies insecure storage and code-quality issues, including read/write access to external storage, hardcoded secrets in multiple files, insecure WebView usage, temporary file creation, an insecure random number generator, possible SQL injection through raw queries, and the use of MD5, which is considered weak because of collision-resistance problems.
 
 \subsection{Low Severity Findings}
-MobSF reports one informational issue: the application logs information, including potentially sensitive data.
-It also reports two secure findings: the use of SSL communication and the presence of root detection capabilities. Finally, the scorecard flags one hotspot related to a critical permission, reinforcing the idea that the application is highly sensitive from a security perspective.
+MobSF reports one informational issue: the application logs information, including potentially sensitive data. This finding is classified as LOW severity in this variant; as will be shown in Chapter~\ref{three}, the same behaviour is elevated to HIGH severity in \threer\ due to a broader set of sensitive fields being exposed in that version. It also reports two secure findings: the use of SSL communication and the presence of root detection capabilities. Finally, the scorecard flags one hotspot related to a critical permission, reinforcing the idea that the application is highly sensitive from a security perspective.
 
 \subsection{Overall Assessment}
 Overall, MobSF confirms that the APK is not a simple transportation application. The combination of weak signing, exported components, insecure storage, dynamic installation capabilities, and ad/tracking infrastructure suggests an application with a high security risk and behaviour consistent with a trojanized or heavily repurposed app.
