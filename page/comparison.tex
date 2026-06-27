@@ -116,18 +116,18 @@ Notably, \threer \  received an explicit MobSF risk score of \textbf{38/100 (Gra
 \hline
 \textbf{Finding} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
 \hline
-Janus vulnerability (v1 signing only) & \checkmark & \checkmark & \checkmark \\
+Janus vulnerability & \checkmark & \checkmark & \checkmark \\
 SHA-1 weak hashing (certificate) & \checkmark & \checkmark & \checkmark \\
 Low minSdk = 14 & \checkmark & \checkmark & \checkmark \\
-Task Hijacking \& StrandHogg & \checkmark & \checkmark & StrandHogg 2.0 only \\
+Task Hijacking \& StrandHogg & \checkmark & \checkmark & StrandHogg 2.0 \\
 Debug configuration enabled & \checkmark & \checkmark & \checkmark \\
 Weak encryption in AdLib library & \checkmark & \checkmark & $\times$ \\
-World-readable file / SharedPreferences & \checkmark & \checkmark & \checkmark \\
+SharedPreferences & \checkmark & \checkmark & \checkmark \\
 Privacy trackers ($>$8) & \checkmark & \checkmark & \checkmark \\
-Logging sensitive info\footnote{Classified as a LOW-severity (informational) finding in Chapters~1 and~2; elevated to HIGH severity by MobSF in Chapter~3 for \threer \ .} & $\times$ & $\times$ & \checkmark \\
+Logging sensitive info\tablefootnote{Classified as a LOW-severity (informational) finding in Chapters~1 and~2; elevated to HIGH severity by MobSF in Chapter~3 for \threer \ .} & $\times$ & $\times$ & \checkmark \\
 Insecure random number generator & $\times$ & $\times$ & \checkmark \\
-Weak cryptographic primitive (MD5) & $\times$ & $\times$ & \checkmark \\
-libAudio3.0: no stack canary / no fortify & $\times$ & $\times$ & \checkmark \\
+Weak cryptographic primitive & $\times$ & $\times$ & \checkmark \\
+libAudio3.0: no stack canary & $\times$ & $\times$ & \checkmark \\
 \hline
 \textit{Total HIGH findings} & \textit{9} & \textit{9} & \textit{10} \\
 \hline
@@ -154,8 +154,8 @@ INSTALL\_PACKAGES external permission & \checkmark & \checkmark & \checkmark \\
 Read/write external storage & \checkmark & \checkmark & \checkmark \\
 Hardcoded secrets (API keys) & \checkmark & \checkmark & \checkmark \\
 Insecure WebView usage & \checkmark & \checkmark & \checkmark \\
-Insecure RNG\footnote{Also flagged as HIGH severity for \threer \  (see Table~\ref{tab:mobsf-high}); MobSF reports it at both severity levels in Chapter~3.} & \checkmark & \checkmark & \checkmark \\
-MD5 weak hashing\footnote{Also flagged as HIGH severity for \threer \  (see Table~\ref{tab:mobsf-high}); MobSF reports it at both severity levels in Chapter~3.} & \checkmark & \checkmark & \checkmark \\
+Insecure RNG\tablefootnote{Also flagged as HIGH severity for \threer \  (see Table~\ref{tab:mobsf-high}); MobSF reports it at both severity levels in Chapter~3.} & \checkmark & \checkmark & \checkmark \\
+MD5 weak hashing\tablefootnote{Also flagged as HIGH severity for \threer \  (see Table~\ref{tab:mobsf-high}); MobSF reports it at both severity levels in Chapter~3.} & \checkmark & \checkmark & \checkmark \\
 SQL injection via raw queries & \checkmark & \checkmark & \checkmark \\
 \texttt{CALL\_PHONE} / \texttt{RECORD\_AUDIO} permissions & $\times$ & $\times$ & \checkmark \\
 \hline
