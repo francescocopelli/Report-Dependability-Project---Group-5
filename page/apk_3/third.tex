@@ -1,12 +1,16 @@
 \chapter{\threer}\label{three}
 
-\section{What is it?}
-The \textit{\threer} sample is a malicious Android application masquerading as a plug-in for a transportation app series developed by a South Korean developer. The legitimate series provides bus-related information, such as bus stop locations and arrival times, for the city of Jeonju, which makes the repackaged sample appear trustworthy at first glance. The package name \texttt{lmh.android.jjbus} and the internal name \texttt{jjbus} are consistent with a localised variant of the same Malbus family analysed in the previous chapters.
+\begin{wrapfigure}{l}{0.05\textwidth}
+\includegraphics[width=\linewidth]{img/common/logo.png}
+\label{fig:wrapfig3}
+\end{wrapfigure}
+
+\paragraph{What is it?} The \textit{\threer} sample is a malicious Android application masquerading as a plug-in for a transportation app series developed by a South Korean developer. The legitimate series provides bus-related information, such as bus stop locations and arrival times, for the city of Jeonju, which makes the repackaged sample appear trustworthy at first glance. The package name \texttt{lmh.android.jjbus} and the internal name \texttt{jjbus} are consistent with a localised variant of the same Malbus family analysed in the previous chapters.
 
 \section{VirusTotal}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{virustotal_3_summary.png}
+    \includegraphics[width=\textwidth]{img/apk_3/virustotal_3_summary.png}
     \caption{VirusTotal Summary for \threer}
     \label{fig:virustotal_3_summary}
 \end{figure}
@@ -19,23 +23,40 @@ It is also noteworthy that some well-known vendors, including Microsoft Defender
 \begin{figure}[h]
     \centering
     \begin{subfigure}[t]{0.48\linewidth}
-        \includegraphics[width=0.8\linewidth]{virustotal_3_detection_complete.png}
+        \includegraphics[width=0.8\linewidth]{img/apk_3/virustotal_3_detection_complete.png}
         \caption{VirusTotal Detection for \threer}
         \label{fig:virustotal_3_detections}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\linewidth}
-        \includegraphics[width=0.8\linewidth]{virustotal_third_permissions.png}
+        \includegraphics[width=0.8\linewidth]{img/apk_3/virustotal_third_permissions.png}
     \end{subfigure}
 \end{figure}
 
 \subsection{Details}
-\todo[inline]{Add details about permissions and certificate from VirusTotal Details tab}
+Here is a detailed analysis of the permissions which are required by the APK, declared in the Manifest file (Fig.\ \ref{fig:manifest_third}):
+\begin{enumerate}
+\item \textbf{android.permission.ACCESS\_FINE\_LOCATION} $\rightarrow$ Allows the precise location of the device (GPS, mobile networks, Wi-Fi).
+\item \textbf{android.permission.ACCESS\_COARSE\_LOCATION} $\rightarrow$ Provides approximate location (based on cellular towers and Wi-Fi).
+\item \textbf{android.permission.READ\_EXTERNAL\_STORAGE} $\rightarrow$ Allows reading files and data saved on external memory (photos, documents, downloads).
+\item \textbf{android.permission.WRITE\_EXTERNAL\_STORAGE} $\rightarrow$ Allows you to create or edit files on external storage.
+\item \textbf{android.permission.INTERNET} $\rightarrow$ Enables any network connection (HTTP, sockets, DNS).
+\item \textbf{android.permission.ACCESS\_NETWORK\_STATE} $\rightarrow$ Reads the status of network connections (Wi-Fi, mobile data).
+\item \textbf{android.permission.ACCESS\_WIFI\_STATE} $\rightarrow$ Gets information about Wi-Fi networks (SSID, BSSID, status).
+\item \textbf{android.permission.CHANGE\_WIFI\_STATE} $\rightarrow$ Changes Wi-Fi status (enable/disable, connects to networks).
+\item \textbf{android.permission.WAKE\_LOCK} $\rightarrow$ Prevents the device from entering sleep mode.
+\item \textbf{android.permission.VIBRATE} $\rightarrow$ Controls the vibration engine.
+\item \textbf{android.permission.CALL\_PHONE} $\rightarrow$ Allows the app to initiate phone calls without user interaction.
+\item \textbf{android.permission.RECORD\_AUDIO} $\rightarrow$ Allows recording audio using the device microphone.
+\item \textbf{android.permission.READ\_PHONE\_STATE} $\rightarrow$ Allows read-only access to phone state, including the current cellular network information, the status of any ongoing calls.
+\item \textbf{lmh.android.jjbus.permission.C2D\_MESSAGE} $\rightarrow$ Enables reception of cloud-to-device messages (C2DM/GCM/FCM).
+\item \textbf{com.google.android.c2dm.permission.RECEIVE} $\rightarrow$ Allows push notifications via Google Cloud Messaging (GCM/FCM).
+\end{enumerate}
 
 \subsection{Relations}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{third_relations.png}
+    \includegraphics[width=\textwidth]{img/apk_3/third_relations.png}
     \caption{VirusTotal Relations for \threer}
     \label{fig:virustotal_3_relations}
 \end{figure}
@@ -59,6 +80,22 @@ Static analysis shows that the application combines legitimate bus-related funct
 This combination suggests that the visible interface is at least partially controlled at runtime. In particular, the hiding of a UI tab and the retrieval of external configuration parameters imply that the application may adapt its behaviour according to remotely supplied values.
 The use of multiple advertising providers, including AdMob, Firebase, and AdLib, further confirms the presence of monetization-oriented logic.
 
+\subsection{BaseMainActivity.java}
+\begin{itemize}
+    \item Acts as the central initialization hub.
+    \item Loads the native library with \texttt{System.loadLibrary("Audio3.0")}.
+    \item Declares and invokes the native methods \texttt{startUpdate()} and \texttt{updateApplication()}.
+    \item Requests the runtime permissions:
+    \begin{itemize}
+        \item \texttt{READ\_EXTERNAL\_STORAGE}
+        \item \texttt{WRITE\_EXTERNAL\_STORAGE}
+        \item \texttt{REQUEST\_INSTALL\_PACKAGES}
+    \end{itemize}
+    \item Loads remote app environment data, including a URL, a database version, and a remote download URL.
+\end{itemize}
+
+This class is the most relevant part of the static analysis. The presence of a native library, together with methods related to update handling and the request for \texttt{REQUEST\_INSTALL\_PACKAGES}, is consistent with dropper-like behaviour. In addition, the remote environment loading mechanism allows the application to modify its behaviour without requiring a new release.
+
 \subsection{EnvConstant.java}
 The \texttt{EnvConstant} class defines several hardcoded advertising and analytics keys. MobSF confirmed the extraction of hardcoded secrets including \texttt{adpostkey}, \texttt{adlibkey}, encrypted strings, and hash keys embedded directly in the source code.
 
@@ -74,23 +111,46 @@ These constants confirm the integration of multiple ad SDKs and tracking framewo
 
 \subsection{BusApiWeb.java}
 \texttt{BusApiWeb} performs network requests to bus-related endpoints over plain HTTP. It uses Volley for networking, parses HTML responses instead of JSON, and relays information through listeners.
+\begin{itemize}
+    \item Makes calls to \texttt{http://jeonjuits.go.kr} and related bus information endpoints.
+    \item Uses Volley for networking.
+    \item Parses HTML responses instead of JSON.
+    \item Relays information through listeners.
+\end{itemize}
 The exclusive use of HTTP means that bus-stop identifiers and route data travel in plaintext and can be intercepted or modified in transit, creating a clear man-in-the-middle risk.
-The contacted domains include \texttt{jeonjuits.go.kr}, which is a legitimate Korean public transport API for the Jeonju city service.
 
 \subsection{AndroidManifest.xml}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{manifest_third.png}
+    \includegraphics[width=\textwidth]{img/apk_3/manifest_third.png}
     \caption{AndroidManifest of \threer}
     \label{fig:manifest_third}
 \end{figure}
-The manifest declares 15 permissions, of which four are classified as dangerous: \texttt{ACCESS\_FINE\_LOCATION}, \texttt{ACCESS\_COARSE\_LOCATION}, \texttt{WRITE\_EXTERNAL\_STORAGE}, and \texttt{READ\_EXTERNAL\_STORAGE}. Nine permissions are identified as commonly abused by malware, including \texttt{INTERNET}, \texttt{WAKE\_LOCK}, and location-related permissions.\\
-The app also declares 26 Activity components, 10 Services, 7 Receivers, and 1 Provider, of which 3 Activities, 3 Services, and 4 Receivers are exported and potentially accessible to other applications.
-The presence of GCM/Firebase messaging support and multiple advertising activities is consistent with the patterns observed in the previous chapters.
+\begin{itemize}
+    \item Declares the following permissions:
+    \begin{itemize}
+        \item \texttt{INTERNET}, \texttt{ACCESS\_FINE\_LOCATION}, \texttt{ACCESS\_COARSE\_LOCATION}
+        \item \texttt{READ\_EXTERNAL\_STORAGE}, \texttt{WRITE\_EXTERNAL\_STORAGE}
+        \item \texttt{REQUEST\_INSTALL\_PACKAGES}
+        \item \texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}, \texttt{READ\_PHONE\_STATE}
+    \end{itemize}
+    \item Declares multiple ad and analytics activities:
+    \begin{itemize}
+        \item AdLib, AdMob, Facebook, AdFit (Kakao), Crashlytics
+    \end{itemize}
+    \item Includes GCM and Firebase messaging support.
+    \item Declares the custom service \texttt{lmh.android.jjbus.GCMIntentService}.
+    \item Exports 3 Activities, 3 Services, and 4 Receivers accessible to other applications.
+\end{itemize}
+The manifest confirms that the application can receive background messages and interact with external services. In particular, \texttt{REQUEST\_INSTALL\_PACKAGES} may allow silent installation of additional APKs, while \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} expand the attack surface well beyond what is expected from a bus-information service.
 
 \subsection{AppInfoActivity.java}
-The \texttt{AppInfoActivity} displays a public bus-related URL and mainly serves to legitimise the app from a user-facing perspective.
-It contains no real interaction logic, which makes it essentially cosmetic. Its role appears to be presenting the application as a legitimate transportation service, even though the rest of the static analysis reveals a much more complex and suspicious architecture.
+\begin{itemize}
+    \item Displays a public bus-related URL for the Jeonju city service.
+    \item Serves to legitimize the app.
+    \item Contains no interaction logic.
+\end{itemize}
+This activity appears to be mainly cosmetic. Its role seems to be presenting the application as a legitimate transportation service, even though the rest of the static analysis reveals a much more complex and suspicious architecture.
 
 \section{Summary}
 
@@ -102,6 +162,8 @@ Multiple ad SDKs & Monetization through aggressive advertising and possible ad f
 \hline
 Native libraries (JNI) & \texttt{libAudio3.0.so} present for multiple architectures; lacks stack canary and fortify function protections. \\
 \hline
+\texttt{REQUEST\_INSTALL\_PACKAGES} & Suggests dropper-like behaviour and possible APK installation without market interaction. \\
+\hline
 Unencrypted HTTP endpoints & Data to \texttt{jeonjuits.go.kr} can be intercepted or modified through MITM attacks. \\
 \hline
 Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can change behaviour based on remote values without a new release. \\
@@ -110,7 +172,7 @@ Fragment and tab visibility manipulation & Suggests conditional or delayed funct
 \hline
 Hardcoded secrets & API keys and encrypted strings embedded in source (\texttt{adpostkey}, \texttt{adlibkey}, hash keys). \\
 \hline
-Microphone and phone call access & The app can record audio and initiate calls, which is inconsistent with a bus-information service. \\
+Microphone and phone call access & \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} are inconsistent with a bus-information service and widen the attack surface significantly. \\
 \hline
 \end{longtable}
 
@@ -118,7 +180,7 @@ Microphone and phone call access & The app can record audio and initiate calls, 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\linewidth]{mobsf_three_scorecard.png}
+    \includegraphics[width=\linewidth]{img/apk_3/mobsf_three_scorecard.png}
     \caption{MobSF Scorecard \threer}
     \label{fig:mobsf_scorecard_three}
 \end{figure}

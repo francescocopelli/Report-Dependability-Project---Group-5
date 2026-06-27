@@ -1,7 +1,11 @@
 \chapter{\twor}
 
-\section{What is it?}
-The \textit{\twor} sample is a malicious Android application masquerading as a plug-in for a transportation app series developed by a South Korean developer. The legitimate series provides bus-related information, such as bus stop locations and arrival times, which makes the repackaged sample appear trustworthy at first glance.
+\begin{wrapfigure}{l}{0.05\textwidth}
+\includegraphics[width=\linewidth]{img/common/logo.png}
+\label{fig:wrapfig2}
+\end{wrapfigure}
+
+\paragraph{What is it?} The \textit{\twor} sample is a malicious Android application masquerading as a plug-in for a transportation app series developed by a South Korean developer. The legitimate series provides bus-related information, such as bus stop locations and arrival times, which makes the repackaged sample appear trustworthy at first glance.
 
 \section{VirusTotal}
 \begin{figure}[htbp]
@@ -30,8 +34,22 @@ It is also noteworthy that some well-known vendors, including Microsoft Defender
 \end{figure}
 
 \subsection{Details}
-The permissions requested by the application include \texttt{ACCESS\_FINE\_LOCATION}, \texttt{ACCESS\_COARSE\_LOCATION}, \texttt{ACCESS\_LOCATION\_EXTRA\_COMMANDS}, \texttt{READ\_EXTERNAL\_STORAGE}, \texttt{WRITE\_EXTERNAL\_STORAGE}, \texttt{INTERNET}, \texttt{ACCESS\_NETWORK\_STATE}, \texttt{ACCESS\_WIFI\_STATE}, \texttt{CHANGE\_WIFI\_STATE}, \texttt{WAKE\_LOCK}, \texttt{VIBRATE}, the custom permission \texttt{lmh.android.gjbus.permission.C2D\_MESSAGE}, and \\\texttt{com.google.android.c2dm.permission.RECEIVE}.
-From a security standpoint, this set is significant because it grants the application access to precise location data, external storage, and network state, while also enabling background execution and push-message handling. Although some of these permissions are compatible with a bus-information service, their combination expands the attack surface and may support tracking, persistence, or remote control.
+Here is a detailed analysis of the permissions which are required by the APK, declared in the Manifest file (Fig.\ \ref{fig:manifest_second}):
+\begin{enumerate}
+\item \textbf{android.permission.ACCESS\_FINE\_LOCATION} $\rightarrow$ Allows the precise location of the device (GPS, mobile networks, Wi-Fi).
+\item \textbf{android.permission.ACCESS\_COARSE\_LOCATION} $\rightarrow$ Provides approximate location (based on cellular towers and Wi-Fi).
+\item \textbf{android.permission.ACCESS\_LOCATION\_EXTRA\_COMMANDS} $\rightarrow$ Allows additional commands to be sent to the location provider (rarely used in legitimate apps).
+\item \textbf{android.permission.READ\_EXTERNAL\_STORAGE} $\rightarrow$ Allows reading files and data saved on external memory (photos, documents, downloads).
+\item \textbf{android.permission.WRITE\_EXTERNAL\_STORAGE} $\rightarrow$ Allows you to create or edit files on external storage.
+\item \textbf{android.permission.INTERNET} $\rightarrow$ Enables any network connection (HTTP, sockets, DNS).
+\item \textbf{android.permission.ACCESS\_NETWORK\_STATE} $\rightarrow$ Reads the status of network connections (Wi-Fi, mobile data).
+\item \textbf{android.permission.ACCESS\_WIFI\_STATE} $\rightarrow$ Gets information about Wi-Fi networks (SSID, BSSID, status).
+\item \textbf{android.permission.CHANGE\_WIFI\_STATE} $\rightarrow$ Changes Wi-Fi status (enable/disable, connects to networks).
+\item \textbf{android.permission.WAKE\_LOCK} $\rightarrow$ Prevents the device from entering sleep mode.
+\item \textbf{android.permission.VIBRATE} $\rightarrow$ Controls the vibration engine.
+\item \textbf{lmh.android.gjbus.permission.C2D\_MESSAGE} $\rightarrow$ Enables reception of cloud-to-device messages (C2DM/GCM/FCM).
+\item \textbf{com.google.android.c2dm.permission.RECEIVE} $\rightarrow$ Allows push notifications via Google Cloud Messaging (GCM/FCM).
+\end{enumerate}
 
 \subsection{Relations}
 
@@ -45,7 +63,6 @@ From a security standpoint, this set is significant because it grants the applic
 VirusTotal, as shown in Fig.\ref{fig:virustotal_2_relations}, reports multiple contacted URLs, domains, and IP addresses associated with the APK. The first three URLs are hosted on AWS Elastic Beanstalk and appear to retrieve the category, environment, and issue from a central database, whereas the last one appears to retrieve an advertising configuration initialization file.
 The domain \texttt{busappmanager.elasticbeanstalk.com} is currently unavailable, while \texttt{gwk.adlibr.com/ad/config/init} is reachable and responds to \texttt{POST} requests, returning a JSON message that indicates a missing \textit{media key} if the request is not properly formed.
 This pattern suggests the presence of a remotely configurable backend and an advertising subsystem, both of which are relevant because they allow the application to change behaviour without requiring a new APK release.
-
 
 \subsection{Behavior}
 The behaviour tab indicates that the APK accesses file-related resources, builds JSON objects from filenames and absolute paths, reads data through buffer streams, and opens files from absolute paths.
@@ -66,6 +83,22 @@ Static analysis shows that the application combines legitimate bus-related funct
 
 This combination suggests that the visible interface is at least partially controlled at runtime. In particular, the hiding of a UI tab and the retrieval of external configuration parameters imply that the application may adapt its behaviour according to remotely supplied values.
 The use of multiple advertising providers, including AdMob, Facebook, and AdLib, further confirms the presence of monetization-oriented logic.
+
+\subsection{BaseMainActivity.java}
+\begin{itemize}
+    \item Acts as the central initialization hub.
+    \item Loads the native library with \texttt{System.loadLibrary("Audio3.0")}.
+    \item Declares and invokes the native methods \texttt{startUpdate()} and \texttt{updateApplication()}.
+    \item Requests the runtime permissions:
+    \begin{itemize}
+        \item \texttt{READ\_EXTERNAL\_STORAGE}
+        \item \texttt{WRITE\_EXTERNAL\_STORAGE}
+        \item \texttt{REQUEST\_INSTALL\_PACKAGES}
+    \end{itemize}
+    \item Loads remote app environment data, including a URL, a database version, and a remote download URL.
+\end{itemize}
+
+This class is the most relevant part of the static analysis. The presence of a native library, together with methods related to update handling and the request for \texttt{REQUEST\_INSTALL\_PACKAGES}, is consistent with dropper-like behaviour. In addition, the remote environment loading mechanism allows the application to modify its behaviour without requiring a new release.
 
 \subsection{EnvConstant.java}
 The \texttt{EnvConstant} class defines several hardcoded advertising and analytics keys, including \texttt{ADAMKEY}, \texttt{ADLIBKEY}, \texttt{ADMOBUNITID}, \texttt{FACEBOOK}, and \texttt{GATRACKERID}.
@@ -93,13 +126,35 @@ This creates a clear man-in-the-middle risk and weakens the integrity of the inf
         \caption{AndroidManifest of \twor}
         \label{fig:manifest_second}
 \end{figure}
-The manifest declares the permissions \texttt{INTERNET}, \texttt{ACCESS\_FINE\_LOCATION}, \texttt{ACCESS\_COARSE\_LOCATION}, \texttt{READ\_EXTERNAL\_STORAGE}, \texttt{WRITE\_EXTERNAL\_STORAGE}, and \texttt{REQUEST\_INSTALL\_PACKAGES}.
-\\It also declares multiple advertising and analytics activities, including AdLib, AdMob, Facebook, and AdFit (Kakao), together with GCM and Firebase messaging support and the custom service \texttt{lmh.android.cwbus.GCMIntentService}.
-These declarations confirm that the application can receive background messages and interact with external services. In particular, \texttt{REQUEST\_INSTALL\_PACKAGES} is notable because, if granted, it may allow silent installation of additional APKs.
+\begin{itemize}
+    \item Declares the following permissions:
+    \begin{itemize}
+        \item \texttt{INTERNET}
+        \item \texttt{ACCESS\_FINE\_LOCATION}
+        \item \texttt{ACCESS\_COARSE\_LOCATION}
+        \item \texttt{READ\_EXTERNAL\_STORAGE}
+        \item \texttt{WRITE\_EXTERNAL\_STORAGE}
+        \item \texttt{REQUEST\_INSTALL\_PACKAGES}
+    \end{itemize}
+    \item Declares multiple ad and analytics activities:
+    \begin{itemize}
+        \item AdLib
+        \item AdMob
+        \item Facebook
+        \item AdFit (Kakao)
+    \end{itemize}
+    \item Includes GCM and Firebase messaging support.
+    \item Declares the custom service \texttt{lmh.android.cwbus.GCMIntentService}.
+\end{itemize}
+The manifest confirms that the application can receive background messages and interact with external services. In particular, the presence of \texttt{REQUEST\_INSTALL\_PACKAGES} is significant because, if granted, it may allow silent installation of additional APKs. Combined with GCM/Firebase messaging, this suggests the possibility of remote triggering of behaviour.
 
 \subsection{AppInfoActivity.java}
-The \texttt{AppInfoActivity} displays the link \texttt{http://bus.changwon.go.kr/main} and mainly serves to legitimise the app from a user-facing perspective.
-It contains no real interaction logic, which makes it essentially cosmetic. Its role appears to be presenting the application as a legitimate transportation service, even though the rest of the static analysis reveals a much more complex and suspicious architecture.
+\begin{itemize}
+    \item Displays the link \texttt{http://bus.changwon.go.kr/main}.
+    \item Serves to legitimize the app.
+    \item Contains no interaction logic.
+\end{itemize}
+This activity appears to be mainly cosmetic, since it exposes a public bus-related URL while providing no additional functional logic. Its role seems to be presenting the application as a legitimate transportation service, even though the rest of the static analysis reveals a much more complex and suspicious architecture.
 
 \section{Summary}
 
