@@ -1,6 +1,6 @@
 \chapter{Comparative Analysis}
 
-This chapter provides a cross-sample comparison of the three Malbus APK variants analysed in the previous chapters: \textbf{Malbus \oner}, \textbf{Malbus \twor}, and \textbf{Malbus \threer}.
+This chapter provides a cross-sample comparison of the three Malbus APK variants analysed in the previous chapters: \textbf{Malbus \oner \ }, \textbf{Malbus \twor \ }, and \textbf{Malbus \threer \ }.
 The goal is to identify common patterns, progressive evolution of malicious capabilities, and differences in evasion sophistication across the family.
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -14,11 +14,11 @@ The suggested threat label assigned by VirusTotal is identical across all sample
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Metric} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
+\textbf{Metric} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
 \hline
 Malicious detections & 40/75 & 40/75 & 38/75 \\
 Reputation score & $-1$ & $-2$ & $0$ \\
-Suggested threat label & {\texttt{apkdownloader}} &{\texttt{apkdownloader}} &{\texttt{apkdownloader}} \\
+Suggested threat label & \multicolumn{3}{c|}{\texttt{trojan.andr/apkdownloader}} \\
 Dominant engine category & trojan (18) & trojan (17) & trojan (17) \\
 Secondary engine category & downloader (5) & downloader (4) + dropper (1) & downloader (5) \\
 Total submissions & 377 & 354 & -- \\
@@ -63,7 +63,7 @@ Noteworthy is that \threer \  only carries the three anti-analysis tags and lack
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Behavioural Tag} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
+\textbf{Behavioural Tag} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
 \hline
 obfuscated & \checkmark & \checkmark & $\times$ \\
 reflection & \checkmark & \checkmark & $\times$ \\
@@ -114,7 +114,7 @@ Notably, \threer \  received an explicit MobSF risk score of \textbf{38/100 (Gra
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
+\textbf{Finding} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
 \hline
 Janus vulnerability (v1 signing only) & \checkmark & \checkmark & \checkmark \\
 SHA-1 weak hashing (certificate) & \checkmark & \checkmark & \checkmark \\
@@ -124,17 +124,20 @@ Debug configuration enabled & \checkmark & \checkmark & \checkmark \\
 Weak encryption in AdLib library & \checkmark & \checkmark & $\times$ \\
 World-readable file / SharedPreferences & \checkmark & \checkmark & \checkmark \\
 Privacy trackers ($>$8) & \checkmark & \checkmark & \checkmark \\
-Logging of sensitive information & $\times$ & $\times$ & \checkmark \\
-Insecure RNG + weak crypto (MD5) & $\times$ & $\times$ & \checkmark \\
+Logging sensitive info\footnote{Classified as a LOW-severity (informational) finding in Chapters~1 and~2; elevated to HIGH severity by MobSF in Chapter~3 for \threer \ .} & $\times$ & $\times$ & \checkmark \\
+Insecure random number generator & $\times$ & $\times$ & \checkmark \\
+Weak cryptographic primitive (MD5) & $\times$ & $\times$ & \checkmark \\
 libAudio3.0: no stack canary / no fortify & $\times$ & $\times$ & \checkmark \\
 \hline
-\textit{Total HIGH findings} & \textit{9} & \textit{9} & \textit{9} \\
+\textit{Total HIGH findings} & \textit{9} & \textit{9} & \textit{10} \\
 \hline
 \end{tabular}
 \caption{MobSF high-severity findings across the three APK samples}
+\label{tab:mobsf-high}
 \end{table}
 
-The total count of 9 high-severity findings is identical across all three samples, but the \emph{composition} differs for \threer \ : replaces the weak AdLib encryption finding (absent in this variant) with three code-level issues -- logging of sensitive information, insecure RNG/MD5 and the unprotected native library -- and shows only the StrandHogg 2.0 weakness rather than the full Task Hijacking vulnerability found in \oner \  and \twor \ .
+The total count of high-severity findings is 9 for \oner \  and \twor \ , and rises to \textbf{10} for \threer \ .
+The composition shifts as follows: the weak AdLib encryption finding (absent in \threer \ ) is replaced by four code-level issues --- logging of sensitive information (elevated from LOW in earlier variants), insecure RNG, weak MD5 cryptography, and the unprotected native library --- while the full Task Hijacking weakness is reduced to StrandHogg~2.0 only.
 
 \subsection{Medium-Severity Findings}
 
@@ -143,7 +146,7 @@ The total count of 9 high-severity findings is identical across all three sample
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
+\textbf{Finding} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
 \hline
 \texttt{android:allowBackup=true} & \checkmark & \checkmark & \checkmark \\
 Exported / unprotected components & \checkmark & \checkmark & \checkmark \\
@@ -151,8 +154,8 @@ INSTALL\_PACKAGES external permission & \checkmark & \checkmark & \checkmark \\
 Read/write external storage & \checkmark & \checkmark & \checkmark \\
 Hardcoded secrets (API keys) & \checkmark & \checkmark & \checkmark \\
 Insecure WebView usage & \checkmark & \checkmark & \checkmark \\
-Insecure RNG & \checkmark & \checkmark & $\times$ (promoted to HIGH) \\
-MD5 weak hashing & \checkmark & \checkmark & $\times$ (promoted to HIGH) \\
+Insecure RNG\footnote{Also flagged as HIGH severity for \threer \  (see Table~\ref{tab:mobsf-high}); MobSF reports it at both severity levels in Chapter~3.} & \checkmark & \checkmark & \checkmark \\
+MD5 weak hashing\footnote{Also flagged as HIGH severity for \threer \  (see Table~\ref{tab:mobsf-high}); MobSF reports it at both severity levels in Chapter~3.} & \checkmark & \checkmark & \checkmark \\
 SQL injection via raw queries & \checkmark & \checkmark & \checkmark \\
 \texttt{CALL\_PHONE} / \texttt{RECORD\_AUDIO} permissions & $\times$ & $\times$ & \checkmark \\
 \hline
@@ -160,7 +163,7 @@ SQL injection via raw queries & \checkmark & \checkmark & \checkmark \\
 \caption{MobSF medium-severity findings across the three APK samples}
 \end{table}
 
-For \threer \ , MobSF promoted Insecure RNG and MD5 from medium to high severity, reflecting the greater overall risk profile of that sample.
+For \threer \ , MobSF reports Insecure RNG and MD5 at \emph{both} medium and high severity, reflecting their dual presence across the scorecard sections of Chapter~3.
 The unique presence of \texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}, and \texttt{READ\_PHONE\_STATE} in \threer \  was also flagged as a medium-severity concern, consistent with the expanded manifest permissions discussed in Section~\ref{sec:permissions}.
 
 % ─────────────────────────────────────────────────────────────────────────────
