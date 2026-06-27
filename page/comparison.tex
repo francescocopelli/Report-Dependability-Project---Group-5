@@ -1,6 +1,6 @@
 \chapter{Comparative Analysis}
 
-This chapter provides a cross-sample comparison of the three Malbus APK variants analysed in the previous chapters: \textbf{Malbus v1.0.3}, \textbf{Malbus v3.3.7}, and \textbf{Malbus v3.6.5}.
+This chapter provides a cross-sample comparison of the three Malbus APK variants analysed in the previous chapters: \textbf{\oner}, \textbf{\twor}, and \textbf{\threer}.
 The goal is to identify common patterns, progressive evolution of malicious capabilities, and differences in evasion sophistication across the family.
 
 \section{VirusTotal Detection}
@@ -12,7 +12,7 @@ The dominant threat label across all samples is \texttt{trojan.andr/apkdownloade
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Metric} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
+\textbf{Metric} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
 \hline
 Malicious detections & 40/75 & 40/75 & 38/75 \\
 Reputation score & $-1$ & $-2$ & $0$ \\
@@ -39,19 +39,19 @@ The most security-relevant permissions present in all samples are:
     \item GCM/FCM push messaging --- allows remote triggering of behaviour.
 \end{itemize}
 
-Two differences emerge across versions. First, v1.0.3 additionally declares \texttt{WRITE\_HISTORY\_BOOKMARKS} and \texttt{READ\_GSERVICES}, which are absent in the later versions, suggesting a minor refinement of the permission scope in subsequent releases.
-Second, v3.6.5 uniquely declares \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO}, which are not present in v1.0.3 or v3.3.7, indicating an expanded capability to interact with device telephony and audio at the hardware level.
+Two differences emerge across versions. First, \oner \ additionally declares \texttt{WRITE\_HISTORY\_BOOKMARKS} and \texttt{READ\_GSERVICES}, which are absent in the later versions, suggesting a minor refinement of the permission scope in subsequent releases.
+Second, \threer \ uniquely declares \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO}, which are not present in \oner \ or \twor, indicating an expanded capability to interact with device telephony and audio at the hardware level.
 
 \section{Behavioural Tags and Evasion Capabilities}
 
 A clear evolution in anti-analysis sophistication is observable across the three versions.
-While v1.0.3 already employs obfuscation and Java Reflection, versions v3.3.7 and v3.6.5 introduce explicit VM and debugger evasion mechanisms, as confirmed by the VirusTotal behavioural tags.
+While \oner \ already employs obfuscation and Java Reflection, versions \twor \ and \threer \ introduce explicit VM and debugger evasion mechanisms, as confirmed by the VirusTotal behavioural tags.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Behavioural Tag} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
+\textbf{Behavioural Tag} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
 \hline
 obfuscated & \checkmark & \checkmark & \checkmark \\
 reflection & \checkmark & \checkmark & \checkmark \\
@@ -65,7 +65,7 @@ sets-process-name & $\times$ & \checkmark & \checkmark \\
 \caption{VirusTotal behavioural tags across the three APK samples}
 \end{table}
 
-This progression indicates that the malware author actively improved the evasion layer between v1.0.3 and the later variants, adding sandbox detection and process name manipulation to harden the payload against dynamic analysis environments.
+This progression indicates that the malware author actively improved the evasion layer between \oner \ and the later variants, adding sandbox detection and process name manipulation to harden the payload against dynamic analysis environments.
 
 \section{Static Analysis: Common Architecture}
 
@@ -87,13 +87,13 @@ The following structural elements are common to all three samples:
 
 MobSF confirms consistent and severe security issues across all three samples.
 All APKs share the same certificate signing profile: SHA-1 with RSA, v1 scheme only, issued by CN=Myoung-Hun Lee --- making all three vulnerable to the Janus attack on Android 5.0--8.0.
-Notably, v3.6.5 received an explicit MobSF risk score of 38/100 (Grade C, HIGH RISK), while the other two samples did not produce a numerical score in the report.
+Notably, \threer \ received an explicit MobSF risk score of 38/100 (Grade C, HIGH RISK), while the other two samples did not produce a numerical score in the report.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding (HIGH severity)} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
+\textbf{Finding (HIGH severity)} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
 \hline
 Janus vulnerability (v1 signing only) & \checkmark & \checkmark & \checkmark \\
 SHA-1 weak hashing & \checkmark & \checkmark & \checkmark \\
@@ -114,7 +114,7 @@ High severity findings (count) & 9 & 9 & 9 \\
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding (MEDIUM severity)} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
+\textbf{Finding (MEDIUM severity)} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
 \hline
 \texttt{android:allowBackup=true} & \checkmark & \checkmark & \checkmark \\
 Exported/unprotected components & \checkmark & \checkmark & \checkmark \\
@@ -131,8 +131,8 @@ CALL\_PHONE / RECORD\_AUDIO permissions & $\times$ & $\times$ & \checkmark \\
 \caption{MobSF medium-severity findings across the three APK samples}
 \end{table}
 
-The high-severity count is identical (9) across all three samples, but the composition differs slightly: v3.6.5 replaces the weak AdLib encryption finding with a native library hardening issue (\texttt{libAudio3.0} compiled without stack canary and PIE), and shows only StrandHogg 2.0 rather than the full Task Hijacking vulnerability present in v1.0.3 and v3.3.7.
-At the medium-severity level, v3.6.5 uniquely introduces \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} permission warnings, consistent with its expanded hardware interaction surface observed in the static analysis.
+The high-severity count is identical (9) across all three samples, but the composition differs slightly: \threer \ replaces the weak AdLib encryption finding with a native library hardening issue (\texttt{libAudio3.0} compiled without stack canary and PIE), and shows only StrandHogg 2.0 rather than the full Task Hijacking vulnerability present in \oner \ and \twor.
+At the medium-severity level, \threer \ uniquely introduces \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} permission warnings, consistent with its expanded hardware interaction surface observed in the static analysis.
 
 \section{YARA Rule Matches}
 
@@ -142,7 +142,7 @@ This consistent structural match across all three variants reinforces the hypoth
 
 \section{Overall Family Assessment}
 
-The comparative analysis confirms that Malbus v1.0.3, v3.3.7, and v3.6.5 are three regional variants of the same trojanised application family, sharing an identical malicious core while adapting the legitimate-facing functionality to different South Korean cities (Changwon, Gwangju, Jeonju).
+The comparative analysis confirms that \oner, \twor, and \threer \ are three regional variants of the same trojanised application family, sharing an identical malicious core while adapting the legitimate-facing functionality to different South Korean cities (Changwon, Gwangju, Jeonju).
 
-The key evolution across versions is twofold: the progressive addition of anti-analysis and VM evasion capabilities (absent in v1.0.3, fully present in v3.3.7 and v3.6.5), and the expansion of hardware interaction permissions in v3.6.5 (\texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}) combined with native library hardening weaknesses specific to that version.
+The key evolution across versions is twofold: the progressive addition of anti-analysis and VM evasion capabilities (absent in \oner, fully present in \twor \ and \threer), and the expansion of hardware interaction permissions in \threer \ (\texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}) combined with native library hardening weaknesses specific to that version.
 In all other dimensions --- permissions, architecture, signing, MobSF core findings, advertising SDKs, and dropper logic --- the three samples are functionally identical, indicating a mature and deliberately maintained malware family rather than opportunistic or independent variants.
