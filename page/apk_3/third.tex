@@ -22,16 +22,15 @@ It is also noteworthy that some well-known vendors, including Microsoft Defender
 
 \begin{figure}[h]
     \centering
-    \begin{subfigure}[t]{0.48\linewidth}
-        \includegraphics[width=0.8\linewidth]{img/apk_3/virustotal_3_detection_complete.png}
+    \includegraphics[width=0.8\linewidth]{img/apk_3/virustotal_third_permissions.png}
+        \label{fig:virustotal_3_permissions}
+\end{figure}
+
+\begin{figure}
+    \centering
+            \includegraphics[width=1.5\linewidth]{img/apk_3/virustotal_3_detection_complete.png}
         \caption{VirusTotal Detection for \threer}
         \label{fig:virustotal_3_detections}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-        \includegraphics[width=0.8\linewidth]{img/apk_3/virustotal_third_permissions.png}
-        \label{fig:to-do}
-    \end{subfigure}
 \end{figure}
 
 VirusTotal assigns the sample a reputation score of \texttt{0} and a suggested threat label of \texttt{trojan.andr /apkdownloader}. The popular threat classification aggregated across all detecting engines identifies ``trojan'' as the dominant category (17 engines), followed by ``downloader'' (5 engines). Notably, the engine Tencent identifies the sample under the specific name \texttt{a.privacy.MalBuslmh}, a designation that directly references the APK package namespace \texttt{lmh}, confirming that this specific sample is known to the threat intelligence community.
