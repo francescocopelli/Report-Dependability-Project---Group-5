@@ -1,22 +1,26 @@
 \chapter{Comparative Analysis}
 
-This chapter provides a cross-sample comparison of the three Malbus APK variants analysed in the previous chapters: \textbf{\oner}, \textbf{\twor}, and \textbf{\threer}.
+This chapter provides a cross-sample comparison of the three Malbus APK variants analysed in the previous chapters: \textbf{Malbus v1.0.3}, \textbf{Malbus v3.3.7}, and \textbf{Malbus v3.6.5}.
 The goal is to identify common patterns, progressive evolution of malicious capabilities, and differences in evasion sophistication across the family.
 
+% ─────────────────────────────────────────────────────────────────────────────
 \section{VirusTotal Detection}
+% ─────────────────────────────────────────────────────────────────────────────
 
-All three samples were submitted to VirusTotal and flagged as malicious by a comparable number of security engines, consistently classified as Android trojans of the downloader family.
-The dominant threat label across all samples is \texttt{trojan.andr/apkdownloader}, and the Tencent engine correctly identified each sample by referencing its specific APK package name.
+All three samples were submitted to VirusTotal and flagged as malicious by a comparable number of security engines.
+The suggested threat label assigned by VirusTotal is identical across all samples --- \texttt{trojan.andr/apkdownloader} --- and the Tencent engine correctly identified each sample by referencing its specific APK package name (\texttt{a.privacy.MalBuslmh}).
 
 \begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Metric} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
+\textbf{Metric} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
 \hline
 Malicious detections & 40/75 & 40/75 & 38/75 \\
 Reputation score & $-1$ & $-2$ & $0$ \\
-Dominant threat label & trojan & trojan/downloader & trojan/downloader \\
+Suggested threat label & \multicolumn{3}{c|}{\texttt{trojan.andr/apkdownloader}} \\
+Dominant engine category & trojan (18) & trojan (17) & trojan (17) \\
+Secondary engine category & downloader (5) & downloader (4) + dropper (1) & downloader (5) \\
 Total submissions & 377 & 354 & -- \\
 Alternative filenames & Yes & Yes & Yes \\
 \hline
@@ -26,37 +30,45 @@ Alternative filenames & Yes & Yes & Yes \\
 
 Notably, well-known vendors such as Microsoft Defender, McAfee, and Malwarebytes failed to detect any of the three samples as malicious, highlighting a significant gap in coverage for this malware family.
 
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Permissions and Attack Surface}
+\label{sec:permissions}
+% ─────────────────────────────────────────────────────────────────────────────
 
-All three APKs share a largely identical permission set, which is consistent with them belonging to the same malware family.
-The most security-relevant permissions present in all samples are:
+All three APKs share a core permission set consistent with the same malware family.
+The most security-relevant permissions present across all samples are:
 
 \begin{itemize}
     \item \texttt{ACCESS\_FINE\_LOCATION} and \texttt{ACCESS\_COARSE\_LOCATION} --- device tracking via GPS and cell towers.
     \item \texttt{READ\_EXTERNAL\_STORAGE} / \texttt{WRITE\_EXTERNAL\_STORAGE} --- access to user files on external memory.
     \item \texttt{REQUEST\_INSTALL\_PACKAGES} --- silent installation of additional APKs, a key dropper indicator.
     \item \texttt{INTERNET} --- unrestricted network access, used for remote configuration and payload delivery.
-    \item GCM/FCM push messaging --- allows remote triggering of behaviour.
+    \item GCM/FCM push messaging (\texttt{C2DMESSAGE}, \texttt{C2DM.RECEIVE}) --- allows remote triggering of behaviour.
 \end{itemize}
 
-Two differences emerge across versions. First, \oner \ additionally declares \texttt{WRITE\_HISTORY\_BOOKMARKS} and \texttt{READ\_GSERVICES}, which are absent in the later versions, suggesting a minor refinement of the permission scope in subsequent releases.
-Second, \threer \ uniquely declares \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO}, which are not present in \oner \ or \twor, indicating an expanded capability to interact with device telephony and audio at the hardware level.
+Two per-version differences emerge when comparing the manifests.
+First, \texttt{WRITE\_HISTORY\_BOOKMARKS} and \texttt{READ\_GSERVICES} are present in v1.0.3 and v3.6.5, but are absent in v3.3.7 --- suggesting that v3.3.7 underwent a minor scope reduction that was not carried forward.
+Second, v3.6.5 uniquely declares \texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}, and \texttt{READ\_PHONE\_STATE} in its manifest, permissions entirely absent from v1.0.3 and v3.3.7.
+Combined with the Crashlytics SDK declared only in v3.6.5, this indicates a measurably expanded attack surface in the latest variant.
 
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Behavioural Tags and Evasion Capabilities}
+% ─────────────────────────────────────────────────────────────────────────────
 
 A clear evolution in anti-analysis sophistication is observable across the three versions.
-While \oner \ already employs obfuscation and Java Reflection, versions \twor \ and \threer \ introduce explicit VM and debugger evasion mechanisms, as confirmed by the VirusTotal behavioural tags.
+While v1.0.3 employs obfuscation and Java Reflection, versions v3.3.7 and v3.6.5 introduce explicit VM and debugger evasion mechanisms.
+Noteworthy is that v3.6.5 only carries the three anti-analysis tags and lacks the \texttt{obfuscated}, \texttt{reflection}, \texttt{telephony}, and \texttt{checks-gps} tags visible in v1.0.3 and v3.3.7; this likely reflects a difference in VirusTotal sandbox coverage for this sample rather than the removal of those capabilities from the code.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Behavioural Tag} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
+\textbf{Behavioural Tag} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
 \hline
-obfuscated & \checkmark & \checkmark & \checkmark \\
-reflection & \checkmark & \checkmark & \checkmark \\
-checks-gps & \checkmark & \checkmark & \checkmark \\
-telephony & \checkmark & \checkmark & \checkmark \\
+obfuscated & \checkmark & \checkmark & $\times$ \\
+reflection & \checkmark & \checkmark & $\times$ \\
+checks-gps & \checkmark & \checkmark & $\times$ \\
+telephony & \checkmark & \checkmark & $\times$ \\
 detect-debug-environment & $\times$ & \checkmark & \checkmark \\
 checks-cpu-name & $\times$ & \checkmark & \checkmark \\
 sets-process-name & $\times$ & \checkmark & \checkmark \\
@@ -65,84 +77,108 @@ sets-process-name & $\times$ & \checkmark & \checkmark \\
 \caption{VirusTotal behavioural tags across the three APK samples}
 \end{table}
 
-This progression indicates that the malware author actively improved the evasion layer between \oner \ and the later variants, adding sandbox detection and process name manipulation to harden the payload against dynamic analysis environments.
+This progression confirms that the malware author actively improved the evasion layer between v1.0.3 and the later variants, adding sandbox detection and process name manipulation to harden the payload against dynamic analysis environments.
 
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Static Analysis: Common Architecture}
+% ─────────────────────────────────────────────────────────────────────────────
 
-The static analysis of all three samples reveals an identical internal architecture, confirming they are regional variants of the same malware family.
-The core classes (\texttt{MainActivity}, \texttt{BaseMainActivity}, \texttt{EnvConstant}, \texttt{BusApiWeb}, \texttt{AppInfoActivity}) are present and functionally equivalent across all three APKs, differing only in the regional bus endpoint URLs and the specific package names (\texttt{cwbus}, \texttt{gjbus}, \texttt{jjbus}).
+The static analysis of all three samples reveals a shared internal architecture, confirming they are regional variants of the same malware family.
+The core classes --- \texttt{MainActivity}, \texttt{BaseMainActivity}, \texttt{EnvConstant}, \texttt{BusApiWeb}, \texttt{AppInfoActivity} --- are present and functionally equivalent across all three APKs, differing only in regional bus endpoint URLs and package names (\texttt{cwbus}, \texttt{gjbus}, \texttt{jjbus}).
 
 The following structural elements are common to all three samples:
 
 \begin{itemize}
     \item Loading of a native library via \texttt{System.loadLibrary("Audio3.0")} in \texttt{BaseMainActivity}.
-    \item Native methods \texttt{startUpdate()} and \texttt{updateApplication()} consistent with dropper-like update logic.
-    \item Remote environment loading mechanism that allows runtime behaviour modification without a new APK release.
-    \item Hardcoded advertising and analytics keys in \texttt{EnvConstant} (AdMob, AdLib, Facebook, Google Analytics).
-    \item Unencrypted HTTP communication in \texttt{BusApiWeb}, exposing data to man-in-the-middle attacks.
-    \item A cosmetic \texttt{AppInfoActivity} displaying a legitimate bus service URL to disguise the application's true nature.
+    \item Native methods \texttt{startUpdate()} and \texttt{updateApplication()}, consistent with dropper-like update logic.
+    \item Remote environment loading mechanism (\texttt{getEnvironmentProperties(\ldots)}) that allows runtime behaviour modification without a new APK release.
+    \item Hardcoded advertising and analytics keys in \texttt{EnvConstant}: AdMob, AdLib, Facebook, Google Analytics (UA-56668425-6).
+    \item Unencrypted HTTP communication in \texttt{BusApiWeb}, exposing bus-stop data to man-in-the-middle interception.
+    \item A cosmetic \texttt{AppInfoActivity} displaying a legitimate regional bus URL to disguise the application's true nature.
 \end{itemize}
 
+One SDK-level difference is worth noting: v3.6.5 additionally includes the \textbf{Crashlytics} crash-reporting SDK and references \textbf{Firebase} more prominently in \texttt{MainActivity}, whereas v1.0.3 and v3.3.7 rely on AdFit (Kakao) without Crashlytics.
+
+% ─────────────────────────────────────────────────────────────────────────────
 \section{MobSF Static Analysis Comparison}
+% ─────────────────────────────────────────────────────────────────────────────
 
 MobSF confirms consistent and severe security issues across all three samples.
-All APKs share the same certificate signing profile: SHA-1 with RSA, v1 scheme only, issued by CN=Myoung-Hun Lee --- making all three vulnerable to the Janus attack on Android 5.0--8.0.
-Notably, \threer \ received an explicit MobSF risk score of 38/100 (Grade C, HIGH RISK), while the other two samples did not produce a numerical score in the report.
+All APKs share the same certificate signing profile: SHA-1 with RSA, v1 scheme only, issued by \texttt{CN=Myoung-Hun Lee} --- making all three vulnerable to the Janus attack on Android 5.0--8.0.
+Notably, v3.6.5 received an explicit MobSF risk score of \textbf{38/100 (Grade C, HIGH RISK)}, encompassing 8 privacy trackers detected out of 432 checked and 4 critical permission hotspots; the other two samples were not assigned a numerical score in the analysed report.
+
+\subsection*{High-Severity Findings}
 
 \begin{table}[H]
 \centering
+\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding (HIGH severity)} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
+\textbf{Finding} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
 \hline
 Janus vulnerability (v1 signing only) & \checkmark & \checkmark & \checkmark \\
-SHA-1 weak hashing & \checkmark & \checkmark & \checkmark \\
-Low minSdk (14) & \checkmark & \checkmark & \checkmark \\
+SHA-1 weak hashing (certificate) & \checkmark & \checkmark & \checkmark \\
+Low minSdk = 14 & \checkmark & \checkmark & \checkmark \\
 Task Hijacking \& StrandHogg & \checkmark & \checkmark & StrandHogg 2.0 only \\
-Debug configuration & \checkmark & \checkmark & \checkmark \\
+Debug configuration enabled & \checkmark & \checkmark & \checkmark \\
 Weak encryption in AdLib library & \checkmark & \checkmark & $\times$ \\
-World-readable file / shared preference & \checkmark & \checkmark & \checkmark \\
+World-readable file / SharedPreferences & \checkmark & \checkmark & \checkmark \\
 Privacy trackers ($>$8) & \checkmark & \checkmark & \checkmark \\
-libAudio3.0: no stack canary / PIE & $\times$ & $\times$ & \checkmark \\
-High severity findings (count) & 9 & 9 & 9 \\
+Logging of sensitive information & $\times$ & $\times$ & \checkmark \\
+Insecure RNG + weak crypto (MD5) & $\times$ & $\times$ & \checkmark \\
+libAudio3.0: no stack canary / no fortify & $\times$ & $\times$ & \checkmark \\
+\hline
+\textit{Total HIGH findings} & \textit{9} & \textit{9} & \textit{9} \\
 \hline
 \end{tabular}
 \caption{MobSF high-severity findings across the three APK samples}
 \end{table}
 
+The total count of 9 high-severity findings is identical across all three samples, but the \emph{composition} differs for v3.6.5: it replaces the weak AdLib encryption finding (absent in this variant) with three code-level issues --- logging of sensitive information, insecure RNG/MD5, and the unprotected native library --- and shows only the StrandHogg 2.0 weakness rather than the full Task Hijacking vulnerability found in v1.0.3 and v3.3.7.
+
+\subsection*{Medium-Severity Findings}
+
 \begin{table}[H]
 \centering
+\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding (MEDIUM severity)} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
+\textbf{Finding} & \textbf{v1.0.3} & \textbf{v3.3.7} & \textbf{v3.6.5} \\
 \hline
 \texttt{android:allowBackup=true} & \checkmark & \checkmark & \checkmark \\
-Exported/unprotected components & \checkmark & \checkmark & \checkmark \\
+Exported / unprotected components & \checkmark & \checkmark & \checkmark \\
 INSTALL\_PACKAGES external permission & \checkmark & \checkmark & \checkmark \\
 Read/write external storage & \checkmark & \checkmark & \checkmark \\
-Hardcoded secrets & \checkmark & \checkmark & \checkmark \\
+Hardcoded secrets (API keys) & \checkmark & \checkmark & \checkmark \\
 Insecure WebView usage & \checkmark & \checkmark & \checkmark \\
-Insecure RNG & \checkmark & \checkmark & \checkmark \\
-MD5 weak hashing & \checkmark & \checkmark & \checkmark \\
+Insecure RNG & \checkmark & \checkmark & $\times$ (promoted to HIGH) \\
+MD5 weak hashing & \checkmark & \checkmark & $\times$ (promoted to HIGH) \\
 SQL injection via raw queries & \checkmark & \checkmark & \checkmark \\
-CALL\_PHONE / RECORD\_AUDIO permissions & $\times$ & $\times$ & \checkmark \\
+\texttt{CALL\_PHONE} / \texttt{RECORD\_AUDIO} permissions & $\times$ & $\times$ & \checkmark \\
 \hline
 \end{tabular}
 \caption{MobSF medium-severity findings across the three APK samples}
 \end{table}
 
-The high-severity count is identical (9) across all three samples, but the composition differs slightly: \threer \ replaces the weak AdLib encryption finding with a native library hardening issue (\texttt{libAudio3.0} compiled without stack canary and PIE), and shows only StrandHogg 2.0 rather than the full Task Hijacking vulnerability present in \oner \ and \twor.
-At the medium-severity level, \threer \ uniquely introduces \texttt{CALL\_PHONE} and \texttt{RECORD\_AUDIO} permission warnings, consistent with its expanded hardware interaction surface observed in the static analysis.
+For v3.6.5, MobSF promoted Insecure RNG and MD5 from medium to high severity, reflecting the greater overall risk profile of that sample.
+The unique presence of \texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}, and \texttt{READ\_PHONE\_STATE} in v3.6.5 was also flagged as a medium-severity concern, consistent with the expanded manifest permissions discussed in Section~\ref{sec:permissions}.
 
+% ─────────────────────────────────────────────────────────────────────────────
 \section{YARA Rule Matches}
+% ─────────────────────────────────────────────────────────────────────────────
 
 All three samples matched the \texttt{IcedID} structural YARA rule from the \texttt{CAPEv2} repository (author: \texttt{kevoreilly/threathive}).
 Although IcedID is historically associated with a Windows banking trojan, the matched rule targets dropper and loader architectures, not the specific malware family.
 This consistent structural match across all three variants reinforces the hypothesis that the Malbus family was deliberately engineered with an advanced payload-delivery architecture, likely to withstand analysis and deliver second-stage payloads on demand.
 
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Overall Family Assessment}
+% ─────────────────────────────────────────────────────────────────────────────
 
-The comparative analysis confirms that \oner, \twor, and \threer \ are three regional variants of the same trojanised application family, sharing an identical malicious core while adapting the legitimate-facing functionality to different South Korean cities (Changwon, Gwangju, Jeonju).
+The comparative analysis confirms that Malbus v1.0.3, v3.3.7, and v3.6.5 are three regional variants of the same trojanised application family, sharing an identical malicious core while adapting the legitimate-facing functionality to different South Korean cities (Changwon, Gwangju, Jeonju).
 
-The key evolution across versions is twofold: the progressive addition of anti-analysis and VM evasion capabilities (absent in \oner, fully present in \twor \ and \threer), and the expansion of hardware interaction permissions in \threer \ (\texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}) combined with native library hardening weaknesses specific to that version.
-In all other dimensions --- permissions, architecture, signing, MobSF core findings, advertising SDKs, and dropper logic --- the three samples are functionally identical, indicating a mature and deliberately maintained malware family rather than opportunistic or independent variants.
+The evolution across versions is twofold.
+First, anti-analysis and VM evasion capabilities are absent in v1.0.3 but fully present in v3.3.7 and v3.6.5 (\texttt{detect-debug-environment}, \texttt{checks-cpu-name}, \texttt{sets-process-name}).
+Second, v3.6.5 introduces additional hardware-level permissions (\texttt{CALL\_PHONE}, \texttt{RECORD\_AUDIO}, \texttt{READ\_PHONE\_STATE}), the Crashlytics SDK, and a native library (\texttt{libAudio3.0.so}) compiled without stack canary or fortify function protections --- all absent in the earlier samples.
+
+In all other dimensions --- certificate signing, dropper architecture, remote configuration, advertising SDK integration, and the core MobSF finding set --- the three samples are functionally identical, indicating a mature and deliberately maintained malware family rather than opportunistic or independent variants.
