@@ -1,6 +1,6 @@
 \chapter{Comparative Analysis}
 
-This chapter provides a cross-sample comparison of the three Malbus APK variants analysed in the previous chapters: \textbf{Malbus \oner \ }, \textbf{Malbus \twor \ }, and \textbf{Malbus \threer \ }.
+This chapter provides a cross-sample comparison of the three Malbus APK variants analysed in the previous chapters: \textbf{Malbus \oner}, \textbf{Malbus \twor}, and \textbf{Malbus \threer}.
 The goal is to identify common patterns, progressive evolution of malicious capabilities, and differences in evasion sophistication across the family.
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -14,11 +14,11 @@ The suggested threat label assigned by VirusTotal is identical across all sample
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Metric} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
+\textbf{Metric} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
 \hline
 Malicious detections & 40/75 & 40/75 & 38/75 \\
 Reputation score & $-1$ & $-2$ & $0$ \\
-Suggested threat label & \multicolumn{3}{c|}{\texttt{trojan.andr/apkdownloader}} \\
+Suggested threat label & {\texttt{apkdownloader}} &{\texttt{apkdownloader}} &{\texttt{apkdownloader}} \\
 Dominant engine category & trojan (18) & trojan (17) & trojan (17) \\
 Secondary engine category & downloader (5) & downloader (4) + dropper (1) & downloader (5) \\
 Total submissions & 377 & 354 & -- \\
@@ -63,7 +63,7 @@ Noteworthy is that \threer \  only carries the three anti-analysis tags and lack
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Behavioural Tag} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
+\textbf{Behavioural Tag} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
 \hline
 obfuscated & \checkmark & \checkmark & $\times$ \\
 reflection & \checkmark & \checkmark & $\times$ \\
@@ -114,7 +114,7 @@ Notably, \threer \  received an explicit MobSF risk score of \textbf{38/100 (Gra
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
+\textbf{Finding} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
 \hline
 Janus vulnerability (v1 signing only) & \checkmark & \checkmark & \checkmark \\
 SHA-1 weak hashing (certificate) & \checkmark & \checkmark & \checkmark \\
@@ -143,7 +143,7 @@ The total count of 9 high-severity findings is identical across all three sample
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Finding} & \textbf{\oner \ } & \textbf{\twor \ } & \textbf{\threer \ } \\
+\textbf{Finding} & \textbf{\oner} & \textbf{\twor} & \textbf{\threer} \\
 \hline
 \texttt{android:allowBackup=true} & \checkmark & \checkmark & \checkmark \\
 Exported / unprotected components & \checkmark & \checkmark & \checkmark \\
