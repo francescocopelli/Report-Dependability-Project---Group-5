@@ -97,6 +97,13 @@ The following structural elements are common to all three samples:
     \item A cosmetic \texttt{AppInfoActivity} displaying a legitimate regional bus URL to disguise the application's true nature.
 \end{itemize}
 
+The functional role of \texttt{startUpdate()} and \texttt{updateApplication()} extends well beyond what static analysis alone reveals.
+\texttt{startUpdate()} operates as a gate-check: it verifies whether a flag file named \texttt{background.png} exists on the device and whether the fake plugin is already installed; only if both conditions are unmet does it proceed to download the plugin from a remote server and install it, displaying a toast message in Korean to the victim.
+\texttt{updateApplication()} is responsible for the second-stage payload delivery: it contacts the same remote server, downloads a native binary (\texttt{libSound1.1.so}), and dynamically loads it into memory via a native loader.
+Critically, the binary is deleted from the filesystem immediately after being loaded, so that no recoverable artefact remains on disk --- a deliberate anti-forensic technique that explains why the second-stage payload is absent from static analysis yet fully operational at runtime.
+At the network level, the downloaded binary is served with a \texttt{.mov} extension to disguise it as a media file and reduce the probability of interception by traffic inspection tools.
+This two-stage architecture --- a dormant dropper activated by remote flag, delivering an in-memory-only payload --- is consistent across all three variants and represents the core malicious capability of the Malbus family.
+
 An SDK-level difference is worth noting: \threer \  additionally includes the \textbf{Crashlytics} crash-reporting SDK and references \textbf{Firebase} more prominently in \texttt{MainActivity}, while \oner \  and \twor \  rely on AdFit (Kakao) without Crashlytics.
 
 % ─────────────────────────────────────────────────────────────────────────────
