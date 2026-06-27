@@ -32,6 +32,8 @@ VirusTotal assigns the sample a reputation score of \texttt{-2} and a suggested 
     \hfill
     \begin{subfigure}[t]{0.48\linewidth}
             \includegraphics[width=0.8\linewidth]{img/apk_2/virustotal_second_permissions.png}
+        \caption{Android Permissions of \twor}
+        \label{fig:virustotal_2_permissions}
         \end{subfigure}
 \end{figure}
 
@@ -86,7 +88,7 @@ It also shows the use of reflection or control-based execution to start another 
 Notably, this variant carries explicit \textbf{anti-analysis and VM evasion} indicators consistent with the third Malbus sample. VirusTotal tags the APK with \texttt{detect-debug-environment}, indicating that the application actively probes for debugger and sandbox contexts at runtime. The tag \texttt{checks-cpu-name} reveals hardware fingerprinting consistent with virtual machine detection, and \texttt{sets-process-name} indicates process name manipulation to obfuscate the running process from monitoring tools.
 
 Overall, the observed behaviour is more complex than that of a simple bus-information client and is compatible with a repackaged application that supports file-system interaction, dynamically driven actions, and active evasion of analysis environments.
-Additionally, as observed in the first Malbus sample, a crowdsourced YARA rule match was recorded for this sample: the IcedID structural rule from the CAPEv2 repository matched the binary. As discussed in Chapter 1, this does not imply family membership but confirms structural similarity with known dropper and loader architectures.
+Additionally, as observed in the first Malbus sample, a crowdsourced YARA rule match was recorded for this sample: the IcedID structural rule from the CAPEv2 repository matched the binary. As discussed in Chapter~\ref{one}, this does not imply family membership but confirms structural similarity with known dropper and loader architectures.
 \section{Static Analysis}
 The Java source code was decompiled using JD-GUI / Bytecodeviewer and inspected manually to identify classes and methods of interest.
 Static analysis shows that the application combines legitimate bus-related functionality with advertising SDKs, remote configuration mechanisms, native code, and update-like behaviour. This indicates that the APK is not limited to its declared purpose, but may also support conditional execution and payload delivery at runtime.
