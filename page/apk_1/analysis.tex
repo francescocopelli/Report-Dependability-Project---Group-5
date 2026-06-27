@@ -20,16 +20,19 @@
             \caption{VirusTotal Detection tab for \oner}
             \label{fig:virustotal_1_detection_comp}
         \end{figure}
-        The antimalware analysis performed with VirusTotal, shown in fig. \ref{fig:virustotal_1_detection_comp}, highlights that:
+        The antimalware analysis performed with VirusTotal, shown in fig.\ \ref{fig:virustotal_1_detection_comp}, highlights that:
         \begin{itemize}
-            \item 42 out of 76 security vendors flagged the file as "\textbf{malicious}";
-            \item 27 out of 76 security vendors flagged the file as a "\textbf{secure file}";
-            \item 7 out of 76 security vendors get a "\textbf{Unable to process file type}" error
+            \item 40 out of 75 security vendors flagged the file as ``\textbf{malicious}'';
+            \item 28 out of 75 security vendors flagged the file as a ``\textbf{secure file}'';
+            \item 7 out of 75 security vendors get an ``\textbf{Unable to process file type}'' error.
         \end{itemize}
-        
-        Most anti-malware programs correctly identify the sample as a generic android trojan, but some of them are even able to recognize its malware family (downloader). 
-        A few vendors classify the sample as a generic android malware, without specifying the family nor the type (trojan).\\
-        It’s interesting to notice that some famous vendor like Microsoft Defender, McAfee and Malwarebytes were unable to identify the file as malicious.
+
+        Most anti-malware programs correctly identify the sample as a generic Android trojan, but some of them are even able to recognise its malware family (downloader).
+        A few vendors classify the sample as a generic Android malware, without specifying the family nor the type (trojan).\\
+        It is also noteworthy that some well-known vendors, including Microsoft Defender, McAfee, and Malwarebytes, did not identify the file as malicious.
+
+        VirusTotal assigns the sample a reputation score of \texttt{-1} and a suggested threat label of \texttt{trojan.andr/apkdownloader}. The popular threat classification aggregated across all detecting engines identifies ``trojan'' as the dominant category (18 engines), followed by ``downloader'' (5 engines). Notably, the engine Tencent identifies the sample under the specific name \texttt{a.privacy.MalBuslmh}, a designation that directly references the APK package name \texttt{lmh.android.cwbus}, confirming that this specific sample --- rather than a generic variant --- is known to the threat intelligence community.
+
          \clearpage
         \subsection{Details}
         \begin{figure}[h]
@@ -38,7 +41,7 @@
             \caption{Android Permission of \oner}
             \label{fig:virustotal_first_permissions}
         \end{figure}
-            Here is an detailed analysis of the permissions (Fig. \ref{fig:virustotal_first_permissions}) which are required by the APK, declared in the Manifest file (Fig. \ref{fig:manifest_first}:
+            Here is a detailed analysis of the permissions (Fig.\ \ref{fig:virustotal_first_permissions}) which are required by the APK, declared in the Manifest file (Fig.\ \ref{fig:manifest_first}):
 \begin{enumerate}\label{sec:perm_analysis}
 \item \textbf{android.permission.ACCESS\_FINE\_LOCATION}$\rightarrow$ Allows the precise location of the device (GPS, mobile networks, Wi-Fi).
 \item  \textbf{android.permission.ACCESS\_COARSE\_LOCATION}$\rightarrow$ Provides approximate location (based on cellular towers and Wi-Fi).
@@ -46,7 +49,7 @@
 \item  \textbf{android.permission.READ\_EXTERNAL\_STORAGE}$\rightarrow$ Allows reading files and data saved on external memory (photos, documents, downloads).
 \item  \textbf{android.permission.WRITE\_EXTERNAL\_STORAGE}$\rightarrow$ Allows you to create or edit files on external storage.
 \item  \textbf{com.android.browser.permission.WRITE\_HISTORY\_BOOKMARKS}$\rightarrow$ Allows editing of history and bookmarks in the stock Android browser.
-\item  \textbf{com.google.android.providers.gsf.permission.READ\_GSERVICES}$\rightarrow$ Reads Google Services Framework settings and data (e.g. device ID, GCM configurations).
+\item  \textbf{com.google.android.providers.gsf.permission.READ\_GSERVICES}$\rightarrow$ Reads Google Services Framework settings and data (e.g.\ device ID, GCM configurations).
 \item  \textbf{lmh.android.cwbus.permission.C2D\_MESSAGE}$\rightarrow$ Enable reception of cloud-to-device messages (C2DM/GCM/FCM).
 \item  \textbf{com.google.android.c2dm.permission.RECEIVE}$\rightarrow$ Allows push notifications via Google Cloud Messaging (GCM/FCM).
 \item  \textbf{android.permission.INTERNET}$\rightarrow$ Enables any network connection (HTTP, sockets, DNS).
@@ -54,15 +57,18 @@
 \item  \textbf{android.permission.ACCESS\_WIFI\_STATE}$\rightarrow$ Gets information about Wi-Fi networks (SSID, BSSID, status).
 \item  \textbf{android.permission.CHANGE\_WIFI\_STATE}$\rightarrow$ Changes Wi-Fi status (enable/disable, connects to networks).
 \item  \textbf{android.permission.WAKE\_LOCK}$\rightarrow$ Prevents the device from entering sleep mode.
-\item  \textbf{android.permission.VIBRATE }$\rightarrow$ Controls the vibration engine.
+\item  \textbf{android.permission.VIBRATE}$\rightarrow$ Controls the vibration engine.
     \end{enumerate}
+
+In addition to the permission analysis, VirusTotal assigns several behavioural and structural tags to the file: \texttt{obfuscated}, \texttt{telephony}, \texttt{reflection}, \texttt{checks-gps}, \texttt{android}, and \texttt{apk}. The tags \texttt{obfuscated} and \texttt{reflection} are consistent with the use of Java Reflection observed during static analysis, while \texttt{checks-gps} directly confirms that the application programmatically queries the GPS subsystem at runtime. The \texttt{telephony} tag further indicates interaction with device communication APIs, which is not expected for a bus-information application and may be relevant to tracking or device fingerprinting.
+
     \begin{figure}
         \centering
         \includegraphics[width=\linewidth]{img/apk_1/manifest_first.png}
         \caption{Android Manifest \oner}
         \label{fig:manifest_first}
     \end{figure}
-            
+
         \subsection{Relations}
         \begin{figure}[h]
             \centering
@@ -70,10 +76,19 @@
             \caption{VirusTotal Relations Tab \oner}
             \label{fig:virustotal_1_relations}
         \end{figure}
-         In addition, VirusTotal shows the contacted domains, URLs, and IP addresses associated with the APK, as shown in Fig. \ref{fig:virustotal_1_relations}. The first three URLs are hosted on AWS Elastic Beanstalk (\texttt{busappmanager.elasticbeanstalk.com}) and appear to retrieve the app category, runtime environment configuration, and remote download URL from a central database. This mechanism is consistent with \emph{dropper-like} behaviour, as it allows the app to modify its functionality without requiring a new release. The fourth domain (\texttt{gwk.adlibr.com/ad/config/init}) serves the advertising configuration and is still reachable; it responds only to POST requests, otherwise returning \texttt{\{ "result": 4003, "message": "key\_media\_key" \}}. The bus-related domains (\texttt{bus.changwon.go.kr}, \texttt{openAPIs.changwon.go.kr}) are legitimate Korean public APIs, and no flagged domains were detected.
+         In addition, VirusTotal shows the contacted domains, URLs, and IP addresses associated with the APK, as shown in Fig.\ \ref{fig:virustotal_1_relations}. The first three URLs are hosted on AWS Elastic Beanstalk (\texttt{busappmanager.elasticbeanstalk.com}) and appear to retrieve the app category, runtime environment configuration, and remote download URL from a central database. This mechanism is consistent with \emph{dropper-like} behaviour, as it allows the app to modify its functionality without requiring a new release. The fourth domain (\texttt{gwk.adlibr.com/ad/config/init}) serves the advertising configuration and is still reachable; it responds only to POST requests, otherwise returning \texttt{\{ "result": 4003, "message": "key\_media\_key" \}}. The bus-related domains (\texttt{bus.changwon.go.kr}, \texttt{openAPIs.changwon.go.kr}) are legitimate Korean public APIs, and no flagged domains were detected.
+
+        VirusTotal also records several alternative names under which the sample has been submitted across its 377 total submissions: \texttt{malbus.apk}, \texttt{supplybus.apk}, \texttt{lmh.android.cwbus-1.0.3.apk}, and others. The variety of filenames under which the same hash appears suggests that the sample has been distributed or repackaged under different labels, which is consistent with trojanised application behaviour.
+
+        Additionally, a notable anomaly is present in the \texttt{AndroidManifest}: the \texttt{GcmReceiver} component is registered under the category \texttt{lmh.android.dgbus}, which differs from the main application package \texttt{lmh.android.cwbus}. This discrepancy in package naming for a core push-messaging receiver may indicate the presence of a secondary plugin or dropper component operating under a separate namespace.
+
         \subsection{Behaviour}
-        VirusTotal’s behaviour tab highlights several actions consistent with a suspicious application profile. The APK accesses file-related resources, builds JSON objects from file names and absolute paths, reads data into buffer streams, and opens files from absolute paths. It also shows the use of reflection/control to start another application from the current one, which may indicate dynamic or indirect execution of external components. In addition, the app interacts with advertising and analytics libraries, scheduling recording tasks and reading files from the assets directory. Overall, the observed behaviour suggests a complex application that performs file-system interaction and may support remote or dynamic actions rather than a simple bus-information client.
-        
+        VirusTotal's behaviour tab highlights several actions consistent with a suspicious application profile. The APK accesses file-related resources, builds JSON objects from file names and absolute paths, reads data into buffer streams, and opens files from absolute paths. It also shows the use of reflection/control to start another application from the current one, which may indicate dynamic or indirect execution of external components. In addition, the app interacts with advertising and analytics libraries, scheduling recording tasks and reading files from the assets directory. Overall, the observed behaviour suggests a complex application that performs file-system interaction and may support remote or dynamic actions rather than a simple bus-information client.
+
+        Notably, the sandbox verdict provided by Zenbox Android classifies the sample as \texttt{CLEAN} with a confidence of 82\%. This result stands in contrast with the static detection rate of 40 out of 75 engines. The discrepancy is consistent with dropper-like evasion strategies: the malicious payload is not executed unconditionally at runtime, but may instead be triggered only under specific conditions --- such as receiving a remote command via GCM/FCM, or upon verification of environment properties retrieved from the AWS Elastic Beanstalk backend. This behaviour-dependent activation pattern makes sandbox-based dynamic analysis less reliable for this class of samples.
+
+        Furthermore, a crowdsourced YARA rule match was recorded for this sample: the rule \texttt{IcedID}, from the ruleset \textit{IcedID} (author: \texttt{kevoreilly/threathive}, source: CAPEv2 on GitHub), matched the binary. While IcedID is historically associated with a Windows banking trojan, the matching rule in this context is a structural pattern rule targeting dropper and loader architectures. The match does not imply that the sample belongs to the IcedID family, but it does indicate that its internal structure shares characteristics with known advanced payload-delivery components, further reinforcing the dropper hypothesis.
+
     \section{Static Analysis}
     Static analysis reveals that the application combines legitimate bus-related functionality with advertising SDKs, remote configuration mechanisms, native code, and update-like behavior. These elements suggest that the APK is not limited to its declared purpose, but may also support conditional execution and payload delivery at runtime.
 
@@ -109,7 +124,7 @@ This class is the most relevant part of the static analysis. The presence of a n
 public static final String ADAM_KEY = "3034Z1OT1385cf1db09";
 public static final String ADLIB_KEY = "590ea88a0cf2843c93807ed9";
 public static final String ADMOB_UNITID = "ca-app-pub-0388605861855854/7499990747";
-public static final String FACEBOOK = "627046304133735685335228304842";
+public static final String FACEBOOK = "627046304133735228304842";
 public static final String GA_TRACKER_ID = "UA-56668425-6";
 \end{lstlisting}
 
@@ -180,7 +195,14 @@ Dynamic configuration via \texttt{getEnvironmentProperties(...)} & The app can c
 \hline
 Fragment and tab visibility manipulation & Suggests conditional or delayed functionality and may hide behavior from users and analysts. \\
 \hline
+VT behavioural tags (\texttt{obfuscated}, \texttt{telephony}, \texttt{checks-gps}) & Confirm runtime evasion, device tracking via GPS, and telephony API interaction beyond the declared app purpose. \\
+\hline
+Sandbox evasion (Zenbox Android) & \texttt{CLEAN} verdict (82\%) despite 40/75 static detections; consistent with condition-dependent payload activation and dropper-like design. \\
+\hline
+YARA match: \texttt{IcedID} rule & Structural similarity with known dropper/loader patterns detected via crowdsourced YARA; reinforces the hypothesis of an advanced payload-delivery architecture. \\
+\hline
 \end{longtable}
+
     \section{MobSF}
 \begin{figure}[h]
     \centering
@@ -255,5 +277,7 @@ The combined results of VirusTotal, static analysis, MobSF, and Genymotion consi
 The static inspection shows that the application is not limited to a simple bus-information interface. Instead, it includes native code, runtime permissions for package installation, hidden or manipulated UI behavior, and remote update logic, all of which are typical indicators of repackaged or dropper-like software.
 
 MobSF strengthens this conclusion by reporting a large number of high- and medium-severity issues, including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, hardcoded secrets, world-readable files, insecure WebView usage, and multiple privacy trackers. In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks, supporting the idea that some behavior is driven at runtime rather than being fully visible from static inspection.
+
+The VirusTotal JSON report provides additional evidence that reinforces and extends the findings described above. The crowdsourced YARA match with the IcedID structural rule, the explicit behavioural tags assigned by the platform (\texttt{obfuscated}, \texttt{telephony}, \texttt{checks-gps}, \texttt{reflection}), and the discrepancy between the static detection rate (40/75 engines flagging the sample as malicious) and the Zenbox Android sandbox verdict (\texttt{CLEAN}, 82\% confidence) collectively point to a deliberate evasion design. The application is likely built to withhold its malicious payload under controlled execution environments, activating only upon receipt of a remote trigger --- a pattern consistent with advanced trojanised droppers rather than simple adware or opportunistic malware.
 
 Overall, the APK should be treated as unsafe. Even if part of its visible functionality appears legitimate, the combination of insecure communication, suspicious permissions, and evasive implementation choices shows a clear mismatch between the declared purpose of the app and its actual security posture.
