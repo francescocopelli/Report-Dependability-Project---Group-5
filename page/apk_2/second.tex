@@ -269,7 +269,7 @@ The emulator analysis therefore strengthens the overall assessment of the sample
     \hfill
     \begin{subfigure}[t]{0.30\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.28.03.365.png}
+        \includegraphics[width=\linewidth]{img/apk_2/screenshots/screenshot-2026-06-26_18.27.51.411.png}
         \caption{Error pop-up indicating database download failure and prompting app restart \twor}
         \label{fig:genymotion2-5}
     \end{subfigure}
@@ -280,10 +280,14 @@ The emulator analysis therefore strengthens the overall assessment of the sample
 
 \section{Conclusion}
 
-The combined results of VirusTotal, static analysis, MobSF, and Genymotion consistently indicate that the analyzed APK is suspicious and potentially malicious. Across the different tools, the same core patterns emerge: unencrypted network traffic, aggressive use of advertising libraries, remote configuration, exported components, and several weaknesses related to storage and cryptography.
-The static inspection shows that the application is not limited to a simple bus-information interface. Instead, it includes native code, runtime permissions for package installation, hidden or manipulated UI behaviour, and remote update logic, all of which are typical indicators of repackaged or dropper-like software.
-MobSF strengthens this conclusion by reporting a large number of high- and medium-severity issues, including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, hardcoded secrets, world-readable files, insecure WebView usage, and multiple privacy trackers.
+The combined results of VirusTotal, static analysis, MobSF, and Genymotion confirm that \twor\ is malicious and shares the same core dropper architecture identified in \oner.
+The structural patterns are consistent across both variants --- native library loading, remote configuration via \texttt{getEnvironmentProperties()}, advertising SDK integration, insecure HTTP communication, and exported components --- confirming family membership.
 
-The VirusTotal JSON report provides additional evidence that reinforces and extends the findings described above. The explicit behavioural tags assigned by the platform (\texttt{sets-process-name}, \texttt{obfuscated}, \texttt{detect-debug-environment}, \texttt{checks-cpu-name}, \texttt{telephony}, \texttt{checks-gps}, \texttt{reflection}) confirm active anti-analysis capabilities that place this sample at the same evasion level as the third Malbus variant. The reputation score of \texttt{-2} and the dominant threat classification as ``trojan/downloader/dropper'' across 22 engines further consolidate the assessment. The variety of submission names (354 total submissions under aliases including \texttt{malbus.apk} and \texttt{bus.apk}) confirms deliberate repackaging and broad distribution.
+The defining characteristic of this variant, however, is the measurable evolution of its evasion profile.
+Unlike \oner\ , which relies solely on code obfuscation and Java Reflection, \twor\ introduces three additional behavioural tags absent from the previous variant: \texttt{detect-debug-environment}, \texttt{checks-cpu-name}, and \texttt{sets-process-name}.
+These indicate that the malware author deliberately hardened this release against dynamic analysis environments --- probing for debuggers, fingerprinting the hardware to detect virtual machines, and manipulating the process name to evade monitoring tools.
+This shift from passive obfuscation to active sandbox detection represents a qualitative step in the family's anti-analysis sophistication.
 
-In parallel, the dynamic analysis in Genymotion confirms that the app interacts with remote services and relies on background components and advertising frameworks, supporting the idea that some behaviour is driven at runtime rather than being fully visible from static inspection. Overall, the APK should be treated as unsafe. Even if part of its visible functionality appears legitimate, the combination of insecure communication, suspicious permissions, anti-analysis evasion, and evasive implementation choices shows a clear mismatch between the declared purpose of the app and its actual security posture.
+MobSF confirms a high security risk with nine high-severity findings, including Janus vulnerability exposure, SHA-1 signing, StrandHogg weaknesses, and multiple privacy trackers --- a profile identical in count and composition to \oner.
+The dynamic analysis in Genymotion further confirms that runtime behaviour is partially driven by remote configuration, consistent with a dropper architecture designed to withhold its payload until the appropriate conditions are met.
+The APK should be treated as unsafe: its combination of insecure communication, suspicious permissions, and active anti-analysis evasion demonstrates a clear and deliberate mismatch between its declared purpose and its actual security posture.
