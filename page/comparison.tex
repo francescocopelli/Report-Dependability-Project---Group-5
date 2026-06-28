@@ -105,8 +105,8 @@ An SDK-level difference is worth noting: \threer \  additionally includes the \t
 \label{sec:c2status}
 % ─────────────────────────────────────────────────────────────────────────────
 
-As part of the dynamic analysis, the primary C2 endpoint shared by all three variants ---
-\texttt{busappmanager.elasticbeanstalk.com} --- was directly probed via \texttt{curl} requests to the known API paths (\texttt{/v1/env/get.json}, \texttt{/v1/category/list.json}, \texttt{/v1/issue/my.json}).
+As part of the dynamic analysis, the primary C2 endpoint shared by all three variants,\\
+\texttt{busappmanager.elasticbeanstalk.com}, was directly probed via \texttt{curl} requests to the known API paths (\texttt{/v1/env/get.json}, \texttt{/v1/category/list.json}, \texttt{/v1/issue/my.json}).
 The server returned no response on any path: the host did not resolve to an active IP address, confirming that the AWS Elastic Beanstalk environment hosting the Malbus distribution infrastructure has been decommissioned.
 
 This finding has two important implications.
@@ -114,7 +114,7 @@ First, the dropper mechanism documented in \texttt{BaseMainActivity} --- remote 
 The infection chain stages~2 through~4 described in the McAfee Malbus report (payload request, delivery, and installation of the second-stage trojan) are therefore confirmed at the structural and static level only; live execution was not possible.
 Second, the C2 inactivity explains the database download errors observed in Genymotion across all three samples: since the remote environment configuration cannot be retrieved, the application is unable to fetch its bus database or payload URL, and fails with a network error on startup.
 
-The \texttt{smartapps.cafe24.com} variant-specific endpoints (\texttt{/cwbus\_android/}, \texttt{/gjbus\_android/environment2.json}, \texttt{/jjbus\_android/environment.json}) were not independently verified but are expected to be equally unreachable given the age of the samples.
+The \texttt{smartapps.cafe24.com} variant-specific endpoints (\texttt{/gjbus\_android/environment2.json},  \texttt{/cwbus\_android/}, \texttt{/jjbus\_android/environment.json}) were not independently verified but are expected to be equally unreachable given the age of the samples.
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{MobSF Static Analysis Comparison}
