@@ -71,4 +71,4 @@ Or use **Overleaf** by uploading the repository as a ZIP archive.
 
 ## Authors
 
-Group 5 — University of Pisa, A.Y. 2025/2026
+Francesco Copelli — University of Pisa
