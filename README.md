@@ -53,7 +53,6 @@ Each APK is analysed through the following pipeline:
 | VM / emulator detection | — | ✓ | ✓ |
 | CPU name check (sandbox detection) | — | ✓ | ✓ |
 | Process name manipulation | — | ✓ | ✓ |
-| `CALL_PHONE` / `RECORD_AUDIO` permissions | — | — | ✓ |
 | `libAudio3.0.so` without stack canary | — | — | ✓ |
 | StrandHogg 2.0 | — | — | ✓ |
 | Crashlytics SDK integration | — | — | ✓ |
